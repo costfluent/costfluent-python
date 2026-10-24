@@ -1,0 +1,307 @@
+import datetime
+from http import HTTPStatus
+from typing import Any
+from urllib.parse import quote
+
+import httpx
+
+from ... import errors
+from ...client import AuthenticatedClient, Client
+from ...models.api_error import ApiError
+from ...models.paginated_response_of_business_metric_value_response import (
+    PaginatedResponseOfBusinessMetricValueResponse,
+)
+from ...types import UNSET, Response, Unset
+
+
+def _get_kwargs(
+    metric_id: str,
+    *,
+    workspace_id: str,
+    start_date: datetime.date | None | Unset = UNSET,
+    end_date: datetime.date | None | Unset = UNSET,
+    page: int | Unset = 1,
+    limit: int | Unset = 20,
+) -> dict[str, Any]:
+
+    params: dict[str, Any] = {}
+
+    params["workspaceId"] = workspace_id
+
+    json_start_date: None | str | Unset
+    if isinstance(start_date, Unset):
+        json_start_date = UNSET
+    elif isinstance(start_date, datetime.date):
+        json_start_date = start_date.isoformat()
+    else:
+        json_start_date = start_date
+    params["startDate"] = json_start_date
+
+    json_end_date: None | str | Unset
+    if isinstance(end_date, Unset):
+        json_end_date = UNSET
+    elif isinstance(end_date, datetime.date):
+        json_end_date = end_date.isoformat()
+    else:
+        json_end_date = end_date
+    params["endDate"] = json_end_date
+
+    params["page"] = page
+
+    params["limit"] = limit
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
+
+    _kwargs: dict[str, Any] = {
+        "method": "get",
+        "url": "/v1/business-metrics/{metric_id}/values".format(
+            metric_id=quote(str(metric_id), safe=""),
+        ),
+        "params": params,
+    }
+
+    return _kwargs
+
+
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ApiError | PaginatedResponseOfBusinessMetricValueResponse | None:
+    if response.status_code == 200:
+        response_200 = PaginatedResponseOfBusinessMetricValueResponse.from_dict(
+            response.json()
+        )
+
+        return response_200
+
+    if response.status_code == 400:
+        response_400 = ApiError.from_dict(response.json())
+
+        return response_400
+
+    if response.status_code == 401:
+        response_401 = ApiError.from_dict(response.json())
+
+        return response_401
+
+    if response.status_code == 403:
+        response_403 = ApiError.from_dict(response.json())
+
+        return response_403
+
+    if response.status_code == 404:
+        response_404 = ApiError.from_dict(response.json())
+
+        return response_404
+
+    if response.status_code == 429:
+        response_429 = ApiError.from_dict(response.json())
+
+        return response_429
+
+    if response.status_code == 500:
+        response_500 = ApiError.from_dict(response.json())
+
+        return response_500
+
+    if response.status_code == 503:
+        response_503 = ApiError.from_dict(response.json())
+
+        return response_503
+
+    if client.raise_on_unexpected_status:
+        raise errors.UnexpectedStatus(response.status_code, response.content)
+    else:
+        return None
+
+
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ApiError | PaginatedResponseOfBusinessMetricValueResponse]:
+    return Response(
+        status_code=HTTPStatus(response.status_code),
+        content=response.content,
+        headers=response.headers,
+        parsed=_parse_response(client=client, response=response),
+    )
+
+
+def sync_detailed(
+    metric_id: str,
+    *,
+    client: AuthenticatedClient,
+    workspace_id: str,
+    start_date: datetime.date | None | Unset = UNSET,
+    end_date: datetime.date | None | Unset = UNSET,
+    page: int | Unset = 1,
+    limit: int | Unset = 20,
+) -> Response[ApiError | PaginatedResponseOfBusinessMetricValueResponse]:
+    """List business metric values
+
+     Returns a business metric's values between two days, both included, by day.
+
+    Needs a token with `viewCostReports` on the workspace.
+
+    Args:
+        metric_id (str):
+        workspace_id (str):
+        start_date (datetime.date | None | Unset):
+        end_date (datetime.date | None | Unset):
+        page (int | Unset):  Default: 1.
+        limit (int | Unset):  Default: 20.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[ApiError | PaginatedResponseOfBusinessMetricValueResponse]
+    """
+
+    kwargs = _get_kwargs(
+        metric_id=metric_id,
+        workspace_id=workspace_id,
+        start_date=start_date,
+        end_date=end_date,
+        page=page,
+        limit=limit,
+    )
+
+    response = client.get_httpx_client().request(
+        **kwargs,
+    )
+
+    return _build_response(client=client, response=response)
+
+
+def sync(
+    metric_id: str,
+    *,
+    client: AuthenticatedClient,
+    workspace_id: str,
+    start_date: datetime.date | None | Unset = UNSET,
+    end_date: datetime.date | None | Unset = UNSET,
+    page: int | Unset = 1,
+    limit: int | Unset = 20,
+) -> ApiError | PaginatedResponseOfBusinessMetricValueResponse | None:
+    """List business metric values
+
+     Returns a business metric's values between two days, both included, by day.
+
+    Needs a token with `viewCostReports` on the workspace.
+
+    Args:
+        metric_id (str):
+        workspace_id (str):
+        start_date (datetime.date | None | Unset):
+        end_date (datetime.date | None | Unset):
+        page (int | Unset):  Default: 1.
+        limit (int | Unset):  Default: 20.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        ApiError | PaginatedResponseOfBusinessMetricValueResponse
+    """
+
+    return sync_detailed(
+        metric_id=metric_id,
+        client=client,
+        workspace_id=workspace_id,
+        start_date=start_date,
+        end_date=end_date,
+        page=page,
+        limit=limit,
+    ).parsed
+
+
+async def asyncio_detailed(
+    metric_id: str,
+    *,
+    client: AuthenticatedClient,
+    workspace_id: str,
+    start_date: datetime.date | None | Unset = UNSET,
+    end_date: datetime.date | None | Unset = UNSET,
+    page: int | Unset = 1,
+    limit: int | Unset = 20,
+) -> Response[ApiError | PaginatedResponseOfBusinessMetricValueResponse]:
+    """List business metric values
+
+     Returns a business metric's values between two days, both included, by day.
+
+    Needs a token with `viewCostReports` on the workspace.
+
+    Args:
+        metric_id (str):
+        workspace_id (str):
+        start_date (datetime.date | None | Unset):
+        end_date (datetime.date | None | Unset):
+        page (int | Unset):  Default: 1.
+        limit (int | Unset):  Default: 20.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[ApiError | PaginatedResponseOfBusinessMetricValueResponse]
+    """
+
+    kwargs = _get_kwargs(
+        metric_id=metric_id,
+        workspace_id=workspace_id,
+        start_date=start_date,
+        end_date=end_date,
+        page=page,
+        limit=limit,
+    )
+
+    response = await client.get_async_httpx_client().request(**kwargs)
+
+    return _build_response(client=client, response=response)
+
+
+async def asyncio(
+    metric_id: str,
+    *,
+    client: AuthenticatedClient,
+    workspace_id: str,
+    start_date: datetime.date | None | Unset = UNSET,
+    end_date: datetime.date | None | Unset = UNSET,
+    page: int | Unset = 1,
+    limit: int | Unset = 20,
+) -> ApiError | PaginatedResponseOfBusinessMetricValueResponse | None:
+    """List business metric values
+
+     Returns a business metric's values between two days, both included, by day.
+
+    Needs a token with `viewCostReports` on the workspace.
+
+    Args:
+        metric_id (str):
+        workspace_id (str):
+        start_date (datetime.date | None | Unset):
+        end_date (datetime.date | None | Unset):
+        page (int | Unset):  Default: 1.
+        limit (int | Unset):  Default: 20.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        ApiError | PaginatedResponseOfBusinessMetricValueResponse
+    """
+
+    return (
+        await asyncio_detailed(
+            metric_id=metric_id,
+            client=client,
+            workspace_id=workspace_id,
+            start_date=start_date,
+            end_date=end_date,
+            page=page,
+            limit=limit,
+        )
+    ).parsed

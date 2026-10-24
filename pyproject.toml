@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling==1.32.4"]
+build-backend = "hatchling.build"
+
+[project]
+name = "costfluent"
+dynamic = ["version"]
+description = "Python client for the Costfluent Public API"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [{ name = "Costfluent" }]
+keywords = ["costfluent", "finops", "cloud-costs", "api-client"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Typing :: Typed",
+]
+# The ranges the generated code is written for.
+dependencies = [
+    "httpx>=0.23.1,<0.29.0",
+    "attrs>=22.2.0",
+]
+
+[project.urls]
+Homepage = "https://costfluent.com"
+Documentation = "https://docs.costfluent.com/developers/sdks"
+Source = "https://github.com/costfluent/costfluent-python"
+
+[tool.hatch.version]
+path = "src/costfluent/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/costfluent"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/costfluent", "tests", "README.md", "LICENSE"]
+
+# The hand-written files only: the generator formats what it writes.
+[tool.ruff]
+line-length = 120
+extend-exclude = [
+    "src/costfluent/api",
+    "src/costfluent/models",
+    "src/costfluent/client.py",
+    "src/costfluent/errors.py",
+    "src/costfluent/types.py",
+    "src/costfluent/_contract.py",
+]
+
+[tool.ruff.lint]
+extend-select = ["B", "I", "UP"]

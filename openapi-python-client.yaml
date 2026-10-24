@@ -1,0 +1,8 @@
+# openapi-python-client settings for the generated half of the package: costfluent/api,
+# costfluent/models, client.py, errors.py and types.py. Ruff runs isolated, so the output does not
+# depend on any configuration found above the folder it is generated into.
+project_name_override: costfluent
+package_name_override: costfluent
+post_hooks:
+  - ruff check . --fix-only --extend-select=I --isolated
+  - ruff format . --isolated
