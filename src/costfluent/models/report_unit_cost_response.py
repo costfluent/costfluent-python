@@ -21,6 +21,8 @@ class ReportUnitCostResponse:
         metric_id (str):
         name (str):
         unit (str):
+        calculation (str):
+        scale (int):
         series (list[ReportUnitCostPointResponse]):
         currency (None | str | Unset):
         average (None | str | Unset):
@@ -29,6 +31,8 @@ class ReportUnitCostResponse:
     metric_id: str
     name: str
     unit: str
+    calculation: str
+    scale: int
     series: list[ReportUnitCostPointResponse]
     currency: None | str | Unset = UNSET
     average: None | str | Unset = UNSET
@@ -39,6 +43,10 @@ class ReportUnitCostResponse:
         name = self.name
 
         unit = self.unit
+
+        calculation = self.calculation
+
+        scale = self.scale
 
         series = []
         for series_item_data in self.series:
@@ -64,6 +72,8 @@ class ReportUnitCostResponse:
                 "metricId": metric_id,
                 "name": name,
                 "unit": unit,
+                "calculation": calculation,
+                "scale": scale,
                 "series": series,
             }
         )
@@ -84,6 +94,10 @@ class ReportUnitCostResponse:
         name = d.pop("name")
 
         unit = d.pop("unit")
+
+        calculation = d.pop("calculation")
+
+        scale = d.pop("scale")
 
         series = []
         _series = d.pop("series")
@@ -114,6 +128,8 @@ class ReportUnitCostResponse:
             metric_id=metric_id,
             name=name,
             unit=unit,
+            calculation=calculation,
+            scale=scale,
             series=series,
             currency=currency,
             average=average,

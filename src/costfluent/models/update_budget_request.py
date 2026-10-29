@@ -8,6 +8,7 @@ from attrs import define as _attrs_define
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.budget_alert_request import BudgetAlertRequest
     from ..models.budget_period_request import BudgetPeriodRequest
 
 
@@ -27,6 +28,7 @@ class UpdateBudgetRequest:
         clear_cost_report (bool | Unset):
         app_ids (list[str] | None | Unset):
         usage_unit (None | str | Unset):
+        alerts (list[BudgetAlertRequest] | None | Unset):
     """
 
     name: None | str | Unset = UNSET
@@ -38,6 +40,7 @@ class UpdateBudgetRequest:
     clear_cost_report: bool | Unset = UNSET
     app_ids: list[str] | None | Unset = UNSET
     usage_unit: None | str | Unset = UNSET
+    alerts: list[BudgetAlertRequest] | None | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         name: None | str | Unset
@@ -95,6 +98,18 @@ class UpdateBudgetRequest:
         else:
             usage_unit = self.usage_unit
 
+        alerts: list[dict[str, Any]] | None | Unset
+        if isinstance(self.alerts, Unset):
+            alerts = UNSET
+        elif isinstance(self.alerts, list):
+            alerts = []
+            for alerts_type_0_item_data in self.alerts:
+                alerts_type_0_item = alerts_type_0_item_data.to_dict()
+                alerts.append(alerts_type_0_item)
+
+        else:
+            alerts = self.alerts
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update({})
@@ -116,11 +131,14 @@ class UpdateBudgetRequest:
             field_dict["appIds"] = app_ids
         if usage_unit is not UNSET:
             field_dict["usageUnit"] = usage_unit
+        if alerts is not UNSET:
+            field_dict["alerts"] = alerts
 
         return field_dict
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.budget_alert_request import BudgetAlertRequest
         from ..models.budget_period_request import BudgetPeriodRequest
 
         d = dict(src_dict)
@@ -215,6 +233,30 @@ class UpdateBudgetRequest:
 
         usage_unit = _parse_usage_unit(d.pop("usageUnit", UNSET))
 
+        def _parse_alerts(data: object) -> list[BudgetAlertRequest] | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, list):
+                    raise TypeError()
+                alerts_type_0 = []
+                _alerts_type_0 = data
+                for alerts_type_0_item_data in _alerts_type_0:
+                    alerts_type_0_item = BudgetAlertRequest.from_dict(
+                        alerts_type_0_item_data
+                    )
+
+                    alerts_type_0.append(alerts_type_0_item)
+
+                return alerts_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(list[BudgetAlertRequest] | None | Unset, data)
+
+        alerts = _parse_alerts(d.pop("alerts", UNSET))
+
         update_budget_request = cls(
             name=name,
             amount=amount,
@@ -225,6 +267,7 @@ class UpdateBudgetRequest:
             clear_cost_report=clear_cost_report,
             app_ids=app_ids,
             usage_unit=usage_unit,
+            alerts=alerts,
         )
 
         return update_budget_request

@@ -122,9 +122,11 @@ def sync_detailed(
     """Update budget
 
      Updates the name, the amounts, the scope (a segment, a cost report or the whole workspace), a usage
-    budget's unit or the notification channels of a budget in place; the start date, cadence and measure
-    are fixed once created, and a usage budget keeps a cost report. A field left out keeps its value;
-    clearSegment and clearCostReport return the budget to the whole workspace.
+    budget's unit, the alert thresholds or the notification channels of a budget in place; the start
+    date, cadence and measure are fixed once created, and a usage budget keeps a cost report. A field
+    left out keeps its value; clearSegment and clearCostReport return the budget to the whole workspace.
+    Alerts replace the thresholds: one kept at the same percent and basis keeps whether it fired this
+    period.
 
     Needs a token with `updateBudget` on the workspace.
 
@@ -164,9 +166,11 @@ def sync(
     """Update budget
 
      Updates the name, the amounts, the scope (a segment, a cost report or the whole workspace), a usage
-    budget's unit or the notification channels of a budget in place; the start date, cadence and measure
-    are fixed once created, and a usage budget keeps a cost report. A field left out keeps its value;
-    clearSegment and clearCostReport return the budget to the whole workspace.
+    budget's unit, the alert thresholds or the notification channels of a budget in place; the start
+    date, cadence and measure are fixed once created, and a usage budget keeps a cost report. A field
+    left out keeps its value; clearSegment and clearCostReport return the budget to the whole workspace.
+    Alerts replace the thresholds: one kept at the same percent and basis keeps whether it fired this
+    period.
 
     Needs a token with `updateBudget` on the workspace.
 
@@ -201,9 +205,11 @@ async def asyncio_detailed(
     """Update budget
 
      Updates the name, the amounts, the scope (a segment, a cost report or the whole workspace), a usage
-    budget's unit or the notification channels of a budget in place; the start date, cadence and measure
-    are fixed once created, and a usage budget keeps a cost report. A field left out keeps its value;
-    clearSegment and clearCostReport return the budget to the whole workspace.
+    budget's unit, the alert thresholds or the notification channels of a budget in place; the start
+    date, cadence and measure are fixed once created, and a usage budget keeps a cost report. A field
+    left out keeps its value; clearSegment and clearCostReport return the budget to the whole workspace.
+    Alerts replace the thresholds: one kept at the same percent and basis keeps whether it fired this
+    period.
 
     Needs a token with `updateBudget` on the workspace.
 
@@ -241,9 +247,11 @@ async def asyncio(
     """Update budget
 
      Updates the name, the amounts, the scope (a segment, a cost report or the whole workspace), a usage
-    budget's unit or the notification channels of a budget in place; the start date, cadence and measure
-    are fixed once created, and a usage budget keeps a cost report. A field left out keeps its value;
-    clearSegment and clearCostReport return the budget to the whole workspace.
+    budget's unit, the alert thresholds or the notification channels of a budget in place; the start
+    date, cadence and measure are fixed once created, and a usage budget keeps a cost report. A field
+    left out keeps its value; clearSegment and clearCostReport return the budget to the whole workspace.
+    Alerts replace the thresholds: one kept at the same percent and basis keeps whether it fired this
+    period.
 
     Needs a token with `updateBudget` on the workspace.
 

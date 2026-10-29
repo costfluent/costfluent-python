@@ -16,18 +16,22 @@ class BudgetAlertResponse:
     """
     Attributes:
         threshold_percent (int):
+        basis (str):
         app_ids (list[str]):
         is_triggered (bool):
         triggered_at (datetime.datetime | None | Unset):
     """
 
     threshold_percent: int
+    basis: str
     app_ids: list[str]
     is_triggered: bool
     triggered_at: datetime.datetime | None | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         threshold_percent = self.threshold_percent
+
+        basis = self.basis
 
         app_ids = self.app_ids
 
@@ -46,6 +50,7 @@ class BudgetAlertResponse:
         field_dict.update(
             {
                 "thresholdPercent": threshold_percent,
+                "basis": basis,
                 "appIds": app_ids,
                 "isTriggered": is_triggered,
             }
@@ -59,6 +64,8 @@ class BudgetAlertResponse:
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
         threshold_percent = d.pop("thresholdPercent")
+
+        basis = d.pop("basis")
 
         app_ids = cast(list[str], d.pop("appIds"))
 
@@ -83,6 +90,7 @@ class BudgetAlertResponse:
 
         budget_alert_response = cls(
             threshold_percent=threshold_percent,
+            basis=basis,
             app_ids=app_ids,
             is_triggered=is_triggered,
             triggered_at=triggered_at,

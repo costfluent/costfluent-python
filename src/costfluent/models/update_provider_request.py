@@ -23,7 +23,7 @@ T = TypeVar("T", bound="UpdateProviderRequest")
 class UpdateProviderRequest:
     """
     Attributes:
-        name (None | str | Unset):
+        display_name (None | str | Unset):
         description (None | str | Unset):
         clear_description (bool | Unset):
         external_id (None | str | Unset):
@@ -33,7 +33,7 @@ class UpdateProviderRequest:
         sync_frequency_minutes (int | None | Unset):
     """
 
-    name: None | str | Unset = UNSET
+    display_name: None | str | Unset = UNSET
     description: None | str | Unset = UNSET
     clear_description: bool | Unset = UNSET
     external_id: None | str | Unset = UNSET
@@ -50,11 +50,11 @@ class UpdateProviderRequest:
             UpdateProviderRequestSettingsType0,
         )
 
-        name: None | str | Unset
-        if isinstance(self.name, Unset):
-            name = UNSET
+        display_name: None | str | Unset
+        if isinstance(self.display_name, Unset):
+            display_name = UNSET
         else:
-            name = self.name
+            display_name = self.display_name
 
         description: None | str | Unset
         if isinstance(self.description, Unset):
@@ -97,8 +97,8 @@ class UpdateProviderRequest:
         field_dict: dict[str, Any] = {}
 
         field_dict.update({})
-        if name is not UNSET:
-            field_dict["name"] = name
+        if display_name is not UNSET:
+            field_dict["displayName"] = display_name
         if description is not UNSET:
             field_dict["description"] = description
         if clear_description is not UNSET:
@@ -127,14 +127,14 @@ class UpdateProviderRequest:
 
         d = dict(src_dict)
 
-        def _parse_name(data: object) -> None | str | Unset:
+        def _parse_display_name(data: object) -> None | str | Unset:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
             return cast(None | str | Unset, data)
 
-        name = _parse_name(d.pop("name", UNSET))
+        display_name = _parse_display_name(d.pop("displayName", UNSET))
 
         def _parse_description(data: object) -> None | str | Unset:
             if data is None:
@@ -210,7 +210,7 @@ class UpdateProviderRequest:
         )
 
         update_provider_request = cls(
-            name=name,
+            display_name=display_name,
             description=description,
             clear_description=clear_description,
             external_id=external_id,

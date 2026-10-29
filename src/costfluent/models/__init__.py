@@ -15,14 +15,21 @@ from .allocation_dry_run_segment_change_response import (
     AllocationDryRunSegmentChangeResponse,
 )
 from .allocation_rule_response import AllocationRuleResponse
+from .annotation_id_request import AnnotationIdRequest
+from .annotation_response import AnnotationResponse
+from .anomaly_contributor_response import AnomalyContributorResponse
 from .anomaly_response import AnomalyResponse
+from .anomaly_sku_contributor_response import AnomalySkuContributorResponse
 from .api_error import ApiError
 from .api_error_entry import ApiErrorEntry
 from .api_error_entry_params_type_0 import ApiErrorEntryParamsType0
 from .app_response import AppResponse
 from .app_response_config import AppResponseConfig
+from .applied_resource_request import AppliedResourceRequest
+from .apply_cost_estimate_request import ApplyCostEstimateRequest
 from .audit_log_entry_response import AuditLogEntryResponse
 from .aws_connector_response import AwsConnectorResponse
+from .budget_alert_basis_value import BudgetAlertBasisValue
 from .budget_alert_request import BudgetAlertRequest
 from .budget_alert_response import BudgetAlertResponse
 from .budget_interval_unit_value import BudgetIntervalUnitValue
@@ -39,7 +46,11 @@ from .business_metric_value_request_labels_type_0 import (
 )
 from .business_metric_value_response import BusinessMetricValueResponse
 from .business_metric_value_response_labels import BusinessMetricValueResponseLabels
+from .chart_axis import ChartAxis
 from .chart_type import ChartType
+from .commitment_coverage_response import CommitmentCoverageResponse
+from .commitment_figures_response import CommitmentFiguresResponse
+from .commitment_response import CommitmentResponse
 from .comparison_period import ComparisonPeriod
 from .connect_provider_request import ConnectProviderRequest
 from .connect_provider_request_credentials import ConnectProviderRequestCredentials
@@ -59,6 +70,14 @@ from .cost_data_point_dimensions import CostDataPointDimensions
 from .cost_data_response import CostDataResponse
 from .cost_entry import CostEntry
 from .cost_entry_tags_type_0 import CostEntryTagsType0
+from .cost_estimate_actual_response import CostEstimateActualResponse
+from .cost_estimate_planned_response import CostEstimatePlannedResponse
+from .cost_estimate_receipt_response import CostEstimateReceiptResponse
+from .cost_estimate_resource_request import CostEstimateResourceRequest
+from .cost_estimate_resource_response import CostEstimateResourceResponse
+from .cost_estimate_response import CostEstimateResponse
+from .cost_estimate_tag_request import CostEstimateTagRequest
+from .cost_estimate_tag_response import CostEstimateTagResponse
 from .cost_filter_translation_response import CostFilterTranslationResponse
 from .cost_forecast_response import CostForecastResponse
 from .cost_group_dimension import CostGroupDimension
@@ -74,6 +93,7 @@ from .cost_report_subscription_response import CostReportSubscriptionResponse
 from .cost_summary_response import CostSummaryResponse
 from .cost_validation_error import CostValidationError
 from .create_allocation_rule_request import CreateAllocationRuleRequest
+from .create_annotation_request import CreateAnnotationRequest
 from .create_app_request import CreateAppRequest
 from .create_app_request_config import CreateAppRequestConfig
 from .create_budget_request import CreateBudgetRequest
@@ -85,6 +105,7 @@ from .create_dashboard_request import CreateDashboardRequest
 from .create_dashboard_widget_request import CreateDashboardWidgetRequest
 from .create_folder_request import CreateFolderRequest
 from .create_saved_filter_request import CreateSavedFilterRequest
+from .create_savings_view_request import CreateSavingsViewRequest
 from .create_segment_request import CreateSegmentRequest
 from .create_team_request import CreateTeamRequest
 from .create_virtual_tag_request import CreateVirtualTagRequest
@@ -116,6 +137,7 @@ from .delete_dashboard_widget_request import DeleteDashboardWidgetRequest
 from .delete_folder_request import DeleteFolderRequest
 from .delete_provider_request import DeleteProviderRequest
 from .delete_saved_filter_request import DeleteSavedFilterRequest
+from .delete_savings_view_request import DeleteSavingsViewRequest
 from .delete_segment_request import DeleteSegmentRequest
 from .delete_tag_key_request import DeleteTagKeyRequest
 from .delete_team_request import DeleteTeamRequest
@@ -135,9 +157,11 @@ from .gcp_service_account_response import GcpServiceAccountResponse
 from .get_allocation_coverage_request import GetAllocationCoverageRequest
 from .get_app_request import GetAppRequest
 from .get_budget_request import GetBudgetRequest
+from .get_commitment_coverage_request import GetCommitmentCoverageRequest
 from .get_cost_alert_events_request import GetCostAlertEventsRequest
 from .get_cost_alert_request import GetCostAlertRequest
 from .get_cost_data_request import GetCostDataRequest
+from .get_cost_estimate_request import GetCostEstimateRequest
 from .get_cost_forecast_request import GetCostForecastRequest
 from .get_cost_report_data_request import GetCostReportDataRequest
 from .get_cost_report_request import GetCostReportRequest
@@ -148,9 +172,12 @@ from .get_dashboard_widget_request import GetDashboardWidgetRequest
 from .get_exchange_rate_request import GetExchangeRateRequest
 from .get_folder_request import GetFolderRequest
 from .get_fx_policy_request import GetFxPolicyRequest
+from .get_kubernetes_efficiency_request import GetKubernetesEfficiencyRequest
 from .get_provider_request import GetProviderRequest
 from .get_provider_sync_history_request import GetProviderSyncHistoryRequest
 from .get_saved_filter_request import GetSavedFilterRequest
+from .get_savings_item_request import GetSavingsItemRequest
+from .get_savings_view_request import GetSavingsViewRequest
 from .get_tag_key_request import GetTagKeyRequest
 from .get_tag_policy_request import GetTagPolicyRequest
 from .get_team_request import GetTeamRequest
@@ -161,12 +188,21 @@ from .get_workspace_request import GetWorkspaceRequest
 from .import_business_metric_values_request import ImportBusinessMetricValuesRequest
 from .invitation_role import InvitationRole
 from .invite_user_request import InviteUserRequest
+from .kubernetes_efficiency_response import KubernetesEfficiencyResponse
+from .kubernetes_efficiency_row_response import KubernetesEfficiencyRowResponse
 from .kubernetes_report import KubernetesReport
 from .kubernetes_report_accepted_response import KubernetesReportAcceptedResponse
 from .kubernetes_report_container import KubernetesReportContainer
+from .kubernetes_report_container_gpu_requests_type_0 import (
+    KubernetesReportContainerGpuRequestsType0,
+)
 from .kubernetes_report_node import KubernetesReportNode
 from .kubernetes_report_node_annotations_type_0 import (
     KubernetesReportNodeAnnotationsType0,
+)
+from .kubernetes_report_node_gpu_labels_type_0 import KubernetesReportNodeGpuLabelsType0
+from .kubernetes_report_node_gpu_resources_type_0 import (
+    KubernetesReportNodeGpuResourcesType0,
 )
 from .kubernetes_report_node_labels_type_0 import KubernetesReportNodeLabelsType0
 from .kubernetes_report_pod import KubernetesReportPod
@@ -177,14 +213,24 @@ from .kubernetes_report_pod_labels_type_0 import KubernetesReportPodLabelsType0
 from .kubernetes_report_pod_namespace_labels_type_0 import (
     KubernetesReportPodNamespaceLabelsType0,
 )
+from .kubernetes_report_volume import KubernetesReportVolume
+from .kubernetes_report_volume_claim_labels_type_0 import (
+    KubernetesReportVolumeClaimLabelsType0,
+)
+from .kubernetes_report_volume_storage_class_annotations_type_0 import (
+    KubernetesReportVolumeStorageClassAnnotationsType0,
+)
 from .list_allocation_rules_request import ListAllocationRulesRequest
+from .list_annotations_request import ListAnnotationsRequest
 from .list_anomalies_request import ListAnomaliesRequest
 from .list_apps_request import ListAppsRequest
 from .list_audit_logs_request import ListAuditLogsRequest
 from .list_budgets_request import ListBudgetsRequest
 from .list_business_metric_values_request import ListBusinessMetricValuesRequest
 from .list_business_metrics_request import ListBusinessMetricsRequest
+from .list_commitments_request import ListCommitmentsRequest
 from .list_cost_alerts_request import ListCostAlertsRequest
+from .list_cost_estimates_request import ListCostEstimatesRequest
 from .list_cost_report_subscriptions_request import ListCostReportSubscriptionsRequest
 from .list_cost_reports_request import ListCostReportsRequest
 from .list_custom_cost_uploads_request import ListCustomCostUploadsRequest
@@ -193,6 +239,8 @@ from .list_exchange_rates_request import ListExchangeRatesRequest
 from .list_folders_request import ListFoldersRequest
 from .list_providers_request import ListProvidersRequest
 from .list_saved_filters_request import ListSavedFiltersRequest
+from .list_savings_items_request import ListSavingsItemsRequest
+from .list_savings_views_request import ListSavingsViewsRequest
 from .list_segments_request import ListSegmentsRequest
 from .list_tag_keys_request import ListTagKeysRequest
 from .list_team_workspace_access_request import ListTeamWorkspaceAccessRequest
@@ -204,6 +252,9 @@ from .me_response import MeResponse
 from .paginated_request import PaginatedRequest
 from .paginated_response_of_allocation_rule_response import (
     PaginatedResponseOfAllocationRuleResponse,
+)
+from .paginated_response_of_annotation_response import (
+    PaginatedResponseOfAnnotationResponse,
 )
 from .paginated_response_of_anomaly_response import PaginatedResponseOfAnomalyResponse
 from .paginated_response_of_app_response import PaginatedResponseOfAppResponse
@@ -217,11 +268,17 @@ from .paginated_response_of_business_metric_response import (
 from .paginated_response_of_business_metric_value_response import (
     PaginatedResponseOfBusinessMetricValueResponse,
 )
+from .paginated_response_of_commitment_response import (
+    PaginatedResponseOfCommitmentResponse,
+)
 from .paginated_response_of_cost_alert_event_response import (
     PaginatedResponseOfCostAlertEventResponse,
 )
 from .paginated_response_of_cost_alert_response import (
     PaginatedResponseOfCostAlertResponse,
+)
+from .paginated_response_of_cost_estimate_response import (
+    PaginatedResponseOfCostEstimateResponse,
 )
 from .paginated_response_of_cost_report_response import (
     PaginatedResponseOfCostReportResponse,
@@ -245,6 +302,12 @@ from .paginated_response_of_provider_definition_response import (
 from .paginated_response_of_provider_response import PaginatedResponseOfProviderResponse
 from .paginated_response_of_saved_filter_response import (
     PaginatedResponseOfSavedFilterResponse,
+)
+from .paginated_response_of_savings_item_response import (
+    PaginatedResponseOfSavingsItemResponse,
+)
+from .paginated_response_of_savings_view_response import (
+    PaginatedResponseOfSavingsViewResponse,
 )
 from .paginated_response_of_segment_response import PaginatedResponseOfSegmentResponse
 from .paginated_response_of_string import PaginatedResponseOfString
@@ -281,6 +344,8 @@ from .reorder_allocation_rules_request import ReorderAllocationRulesRequest
 from .report_breakdown_response import ReportBreakdownResponse
 from .report_comparison_point_response import ReportComparisonPointResponse
 from .report_comparison_response import ReportComparisonResponse
+from .report_forecast_point_response import ReportForecastPointResponse
+from .report_forecast_response import ReportForecastResponse
 from .report_group_response import ReportGroupResponse
 from .report_grouping_request import ReportGroupingRequest
 from .report_grouping_response import ReportGroupingResponse
@@ -288,9 +353,13 @@ from .report_summary_response import ReportSummaryResponse
 from .report_time_series_response import ReportTimeSeriesResponse
 from .report_unit_cost_point_response import ReportUnitCostPointResponse
 from .report_unit_cost_response import ReportUnitCostResponse
+from .resource_efficiency_response import ResourceEfficiencyResponse
 from .resume_cost_alert_request import ResumeCostAlertRequest
 from .saved_filter_created_response import SavedFilterCreatedResponse
 from .saved_filter_response import SavedFilterResponse
+from .savings_item_response import SavingsItemResponse
+from .savings_queue_sort import SavingsQueueSort
+from .savings_view_response import SavingsViewResponse
 from .segment_response import SegmentResponse
 from .segment_split_method_value import SegmentSplitMethodValue
 from .segment_split_request import SegmentSplitRequest
@@ -301,7 +370,9 @@ from .service_cost_breakdown import ServiceCostBreakdown
 from .set_dashboard_default_request import SetDashboardDefaultRequest
 from .set_dashboard_saved_filter_request import SetDashboardSavedFilterRequest
 from .set_folder_saved_filter_request import SetFolderSavedFilterRequest
+from .set_team_default_dashboard_request import SetTeamDefaultDashboardRequest
 from .set_team_workspace_access_request import SetTeamWorkspaceAccessRequest
+from .submit_cost_estimate_request import SubmitCostEstimateRequest
 from .submit_costs_request import SubmitCostsRequest
 from .submit_costs_response import SubmitCostsResponse
 from .sync_history_entry_response import SyncHistoryEntryResponse
@@ -321,6 +392,7 @@ from .unit_cost_label_condition_request import UnitCostLabelConditionRequest
 from .unit_cost_label_condition_response import UnitCostLabelConditionResponse
 from .unit_quantity import UnitQuantity
 from .update_allocation_rule_request import UpdateAllocationRuleRequest
+from .update_annotation_request import UpdateAnnotationRequest
 from .update_app_request import UpdateAppRequest
 from .update_app_request_config_type_0 import UpdateAppRequestConfigType0
 from .update_budget_request import UpdateBudgetRequest
@@ -339,6 +411,7 @@ from .update_provider_request_credentials_type_0 import (
 )
 from .update_provider_request_settings_type_0 import UpdateProviderRequestSettingsType0
 from .update_saved_filter_request import UpdateSavedFilterRequest
+from .update_savings_view_request import UpdateSavingsViewRequest
 from .update_segment_request import UpdateSegmentRequest
 from .update_tag_policy_request import UpdateTagPolicyRequest
 from .update_team_member_request import UpdateTeamMemberRequest
@@ -377,14 +450,21 @@ __all__ = (
     "AllocationDryRunResponse",
     "AllocationDryRunSegmentChangeResponse",
     "AllocationRuleResponse",
+    "AnnotationIdRequest",
+    "AnnotationResponse",
+    "AnomalyContributorResponse",
     "AnomalyResponse",
+    "AnomalySkuContributorResponse",
     "ApiError",
     "ApiErrorEntry",
     "ApiErrorEntryParamsType0",
     "AppResponse",
     "AppResponseConfig",
+    "AppliedResourceRequest",
+    "ApplyCostEstimateRequest",
     "AuditLogEntryResponse",
     "AwsConnectorResponse",
+    "BudgetAlertBasisValue",
     "BudgetAlertRequest",
     "BudgetAlertResponse",
     "BudgetIntervalUnitValue",
@@ -399,7 +479,11 @@ __all__ = (
     "BusinessMetricValueRequestLabelsType0",
     "BusinessMetricValueResponse",
     "BusinessMetricValueResponseLabels",
+    "ChartAxis",
     "ChartType",
+    "CommitmentCoverageResponse",
+    "CommitmentFiguresResponse",
+    "CommitmentResponse",
     "ComparisonPeriod",
     "ConnectProviderRequest",
     "ConnectProviderRequestCredentials",
@@ -415,6 +499,14 @@ __all__ = (
     "CostDataResponse",
     "CostEntry",
     "CostEntryTagsType0",
+    "CostEstimateActualResponse",
+    "CostEstimatePlannedResponse",
+    "CostEstimateReceiptResponse",
+    "CostEstimateResourceRequest",
+    "CostEstimateResourceResponse",
+    "CostEstimateResponse",
+    "CostEstimateTagRequest",
+    "CostEstimateTagResponse",
     "CostFilterTranslationResponse",
     "CostForecastResponse",
     "CostGroupDimension",
@@ -428,6 +520,7 @@ __all__ = (
     "CostSummaryResponse",
     "CostValidationError",
     "CreateAllocationRuleRequest",
+    "CreateAnnotationRequest",
     "CreateAppRequest",
     "CreateAppRequestConfig",
     "CreateBudgetRequest",
@@ -439,6 +532,7 @@ __all__ = (
     "CreateDashboardWidgetRequest",
     "CreateFolderRequest",
     "CreateSavedFilterRequest",
+    "CreateSavingsViewRequest",
     "CreateSegmentRequest",
     "CreateTeamRequest",
     "CreateVirtualTagRequest",
@@ -466,6 +560,7 @@ __all__ = (
     "DeleteFolderRequest",
     "DeleteProviderRequest",
     "DeleteSavedFilterRequest",
+    "DeleteSavingsViewRequest",
     "DeleteSegmentRequest",
     "DeleteTagKeyRequest",
     "DeleteTeamRequest",
@@ -485,9 +580,11 @@ __all__ = (
     "GetAllocationCoverageRequest",
     "GetAppRequest",
     "GetBudgetRequest",
+    "GetCommitmentCoverageRequest",
     "GetCostAlertEventsRequest",
     "GetCostAlertRequest",
     "GetCostDataRequest",
+    "GetCostEstimateRequest",
     "GetCostForecastRequest",
     "GetCostReportDataRequest",
     "GetCostReportRequest",
@@ -498,9 +595,12 @@ __all__ = (
     "GetExchangeRateRequest",
     "GetFolderRequest",
     "GetFxPolicyRequest",
+    "GetKubernetesEfficiencyRequest",
     "GetProviderRequest",
     "GetProviderSyncHistoryRequest",
     "GetSavedFilterRequest",
+    "GetSavingsItemRequest",
+    "GetSavingsViewRequest",
     "GetTagKeyRequest",
     "GetTagPolicyRequest",
     "GetTeamRequest",
@@ -511,24 +611,35 @@ __all__ = (
     "ImportBusinessMetricValuesRequest",
     "InvitationRole",
     "InviteUserRequest",
+    "KubernetesEfficiencyResponse",
+    "KubernetesEfficiencyRowResponse",
     "KubernetesReport",
     "KubernetesReportAcceptedResponse",
     "KubernetesReportContainer",
+    "KubernetesReportContainerGpuRequestsType0",
     "KubernetesReportNode",
     "KubernetesReportNodeAnnotationsType0",
+    "KubernetesReportNodeGpuLabelsType0",
+    "KubernetesReportNodeGpuResourcesType0",
     "KubernetesReportNodeLabelsType0",
     "KubernetesReportPod",
     "KubernetesReportPodAnnotationsType0",
     "KubernetesReportPodLabelsType0",
     "KubernetesReportPodNamespaceLabelsType0",
+    "KubernetesReportVolume",
+    "KubernetesReportVolumeClaimLabelsType0",
+    "KubernetesReportVolumeStorageClassAnnotationsType0",
     "ListAllocationRulesRequest",
+    "ListAnnotationsRequest",
     "ListAnomaliesRequest",
     "ListAppsRequest",
     "ListAuditLogsRequest",
     "ListBudgetsRequest",
     "ListBusinessMetricValuesRequest",
     "ListBusinessMetricsRequest",
+    "ListCommitmentsRequest",
     "ListCostAlertsRequest",
+    "ListCostEstimatesRequest",
     "ListCostReportSubscriptionsRequest",
     "ListCostReportsRequest",
     "ListCustomCostUploadsRequest",
@@ -537,6 +648,8 @@ __all__ = (
     "ListFoldersRequest",
     "ListProvidersRequest",
     "ListSavedFiltersRequest",
+    "ListSavingsItemsRequest",
+    "ListSavingsViewsRequest",
     "ListSegmentsRequest",
     "ListTagKeysRequest",
     "ListTeamWorkspaceAccessRequest",
@@ -547,14 +660,17 @@ __all__ = (
     "MeResponse",
     "PaginatedRequest",
     "PaginatedResponseOfAllocationRuleResponse",
+    "PaginatedResponseOfAnnotationResponse",
     "PaginatedResponseOfAnomalyResponse",
     "PaginatedResponseOfAppResponse",
     "PaginatedResponseOfAuditLogEntryResponse",
     "PaginatedResponseOfBudgetResponse",
     "PaginatedResponseOfBusinessMetricResponse",
     "PaginatedResponseOfBusinessMetricValueResponse",
+    "PaginatedResponseOfCommitmentResponse",
     "PaginatedResponseOfCostAlertEventResponse",
     "PaginatedResponseOfCostAlertResponse",
+    "PaginatedResponseOfCostEstimateResponse",
     "PaginatedResponseOfCostReportResponse",
     "PaginatedResponseOfCostReportSubscriptionResponse",
     "PaginatedResponseOfCustomCostUploadResponse",
@@ -564,6 +680,8 @@ __all__ = (
     "PaginatedResponseOfProviderDefinitionResponse",
     "PaginatedResponseOfProviderResponse",
     "PaginatedResponseOfSavedFilterResponse",
+    "PaginatedResponseOfSavingsItemResponse",
+    "PaginatedResponseOfSavingsViewResponse",
     "PaginatedResponseOfSegmentResponse",
     "PaginatedResponseOfString",
     "PaginatedResponseOfSyncHistoryEntryResponse",
@@ -589,6 +707,8 @@ __all__ = (
     "ReportBreakdownResponse",
     "ReportComparisonPointResponse",
     "ReportComparisonResponse",
+    "ReportForecastPointResponse",
+    "ReportForecastResponse",
     "ReportGroupResponse",
     "ReportGroupingRequest",
     "ReportGroupingResponse",
@@ -596,9 +716,13 @@ __all__ = (
     "ReportTimeSeriesResponse",
     "ReportUnitCostPointResponse",
     "ReportUnitCostResponse",
+    "ResourceEfficiencyResponse",
     "ResumeCostAlertRequest",
     "SavedFilterCreatedResponse",
     "SavedFilterResponse",
+    "SavingsItemResponse",
+    "SavingsQueueSort",
+    "SavingsViewResponse",
     "SegmentResponse",
     "SegmentSplitMethodValue",
     "SegmentSplitRequest",
@@ -609,7 +733,9 @@ __all__ = (
     "SetDashboardDefaultRequest",
     "SetDashboardSavedFilterRequest",
     "SetFolderSavedFilterRequest",
+    "SetTeamDefaultDashboardRequest",
     "SetTeamWorkspaceAccessRequest",
+    "SubmitCostEstimateRequest",
     "SubmitCostsRequest",
     "SubmitCostsResponse",
     "SyncHistoryEntryResponse",
@@ -629,6 +755,7 @@ __all__ = (
     "UnitCostLabelConditionResponse",
     "UnitQuantity",
     "UpdateAllocationRuleRequest",
+    "UpdateAnnotationRequest",
     "UpdateAppRequest",
     "UpdateAppRequestConfigType0",
     "UpdateBudgetRequest",
@@ -643,6 +770,7 @@ __all__ = (
     "UpdateProviderRequestCredentialsType0",
     "UpdateProviderRequestSettingsType0",
     "UpdateSavedFilterRequest",
+    "UpdateSavingsViewRequest",
     "UpdateSegmentRequest",
     "UpdateTagPolicyRequest",
     "UpdateTeamMemberRequest",

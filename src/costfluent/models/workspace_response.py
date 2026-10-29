@@ -27,6 +27,7 @@ class WorkspaceResponse:
         enable_currency_conversion (bool):
         conversion_method (str):
         enable_automatic_syncing (bool):
+        blend_commitment_discounts (bool):
         time_zone (str):
         report_defaults (WorkspaceReportDefaultsResponse):
         anomalies_exclude_marketplace (bool):
@@ -44,6 +45,7 @@ class WorkspaceResponse:
     enable_currency_conversion: bool
     conversion_method: str
     enable_automatic_syncing: bool
+    blend_commitment_discounts: bool
     time_zone: str
     report_defaults: WorkspaceReportDefaultsResponse
     anomalies_exclude_marketplace: bool
@@ -66,6 +68,8 @@ class WorkspaceResponse:
         conversion_method = self.conversion_method
 
         enable_automatic_syncing = self.enable_automatic_syncing
+
+        blend_commitment_discounts = self.blend_commitment_discounts
 
         time_zone = self.time_zone
 
@@ -105,6 +109,7 @@ class WorkspaceResponse:
                 "enableCurrencyConversion": enable_currency_conversion,
                 "conversionMethod": conversion_method,
                 "enableAutomaticSyncing": enable_automatic_syncing,
+                "blendCommitmentDiscounts": blend_commitment_discounts,
                 "timeZone": time_zone,
                 "reportDefaults": report_defaults,
                 "anomaliesExcludeMarketplace": anomalies_exclude_marketplace,
@@ -139,6 +144,8 @@ class WorkspaceResponse:
         conversion_method = d.pop("conversionMethod")
 
         enable_automatic_syncing = d.pop("enableAutomaticSyncing")
+
+        blend_commitment_discounts = d.pop("blendCommitmentDiscounts")
 
         time_zone = d.pop("timeZone")
 
@@ -191,6 +198,7 @@ class WorkspaceResponse:
             enable_currency_conversion=enable_currency_conversion,
             conversion_method=conversion_method,
             enable_automatic_syncing=enable_automatic_syncing,
+            blend_commitment_discounts=blend_commitment_discounts,
             time_zone=time_zone,
             report_defaults=report_defaults,
             anomalies_exclude_marketplace=anomalies_exclude_marketplace,

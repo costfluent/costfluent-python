@@ -123,8 +123,9 @@ def sync_detailed(
 
      Creates a budget over a workspace, a segment or a saved cost report: a start date, a cadence of N
     days, weeks, months or years, and one amount for every period or an amount per period, with optional
-    alert thresholds and notification channels. A usage budget (measure usage) counts one usage unit on
-    a saved cost report's rows instead of money; a report holds at most one cost and one usage budget.
+    alert thresholds on the spend so far or on the forecast for the period's end, and notification
+    channels. A usage budget (measure usage) counts one usage unit on a saved cost report's rows instead
+    of money, and takes no forecast threshold; a report holds at most one cost and one usage budget.
 
     Needs a token with `createBudget` on the workspace.
 
@@ -162,8 +163,9 @@ def sync(
 
      Creates a budget over a workspace, a segment or a saved cost report: a start date, a cadence of N
     days, weeks, months or years, and one amount for every period or an amount per period, with optional
-    alert thresholds and notification channels. A usage budget (measure usage) counts one usage unit on
-    a saved cost report's rows instead of money; a report holds at most one cost and one usage budget.
+    alert thresholds on the spend so far or on the forecast for the period's end, and notification
+    channels. A usage budget (measure usage) counts one usage unit on a saved cost report's rows instead
+    of money, and takes no forecast threshold; a report holds at most one cost and one usage budget.
 
     Needs a token with `createBudget` on the workspace.
 
@@ -196,8 +198,9 @@ async def asyncio_detailed(
 
      Creates a budget over a workspace, a segment or a saved cost report: a start date, a cadence of N
     days, weeks, months or years, and one amount for every period or an amount per period, with optional
-    alert thresholds and notification channels. A usage budget (measure usage) counts one usage unit on
-    a saved cost report's rows instead of money; a report holds at most one cost and one usage budget.
+    alert thresholds on the spend so far or on the forecast for the period's end, and notification
+    channels. A usage budget (measure usage) counts one usage unit on a saved cost report's rows instead
+    of money, and takes no forecast threshold; a report holds at most one cost and one usage budget.
 
     Needs a token with `createBudget` on the workspace.
 
@@ -233,8 +236,9 @@ async def asyncio(
 
      Creates a budget over a workspace, a segment or a saved cost report: a start date, a cadence of N
     days, weeks, months or years, and one amount for every period or an amount per period, with optional
-    alert thresholds and notification channels. A usage budget (measure usage) counts one usage unit on
-    a saved cost report's rows instead of money; a report holds at most one cost and one usage budget.
+    alert thresholds on the spend so far or on the forecast for the period's end, and notification
+    channels. A usage budget (measure usage) counts one usage unit on a saved cost report's rows instead
+    of money, and takes no forecast threshold; a report holds at most one cost and one usage budget.
 
     Needs a token with `createBudget` on the workspace.
 

@@ -30,6 +30,8 @@ class CostReportSettingsRequest:
         measure (None | str | Unset):
         unit_cost_metric_id (None | str | Unset):
         unit_cost_label_filter (list[UnitCostLabelConditionRequest] | None | Unset):
+        unit_cost_calculation (None | str | Unset):
+        unit_cost_scale (int | None | Unset):
     """
 
     include_credits: bool | None | Unset = UNSET
@@ -43,6 +45,8 @@ class CostReportSettingsRequest:
     measure: None | str | Unset = UNSET
     unit_cost_metric_id: None | str | Unset = UNSET
     unit_cost_label_filter: list[UnitCostLabelConditionRequest] | None | Unset = UNSET
+    unit_cost_calculation: None | str | Unset = UNSET
+    unit_cost_scale: int | None | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         include_credits: bool | None | Unset
@@ -123,6 +127,18 @@ class CostReportSettingsRequest:
         else:
             unit_cost_label_filter = self.unit_cost_label_filter
 
+        unit_cost_calculation: None | str | Unset
+        if isinstance(self.unit_cost_calculation, Unset):
+            unit_cost_calculation = UNSET
+        else:
+            unit_cost_calculation = self.unit_cost_calculation
+
+        unit_cost_scale: int | None | Unset
+        if isinstance(self.unit_cost_scale, Unset):
+            unit_cost_scale = UNSET
+        else:
+            unit_cost_scale = self.unit_cost_scale
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update({})
@@ -148,6 +164,10 @@ class CostReportSettingsRequest:
             field_dict["unitCostMetricId"] = unit_cost_metric_id
         if unit_cost_label_filter is not UNSET:
             field_dict["unitCostLabelFilter"] = unit_cost_label_filter
+        if unit_cost_calculation is not UNSET:
+            field_dict["unitCostCalculation"] = unit_cost_calculation
+        if unit_cost_scale is not UNSET:
+            field_dict["unitCostScale"] = unit_cost_scale
 
         return field_dict
 
@@ -307,6 +327,26 @@ class CostReportSettingsRequest:
             d.pop("unitCostLabelFilter", UNSET)
         )
 
+        def _parse_unit_cost_calculation(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        unit_cost_calculation = _parse_unit_cost_calculation(
+            d.pop("unitCostCalculation", UNSET)
+        )
+
+        def _parse_unit_cost_scale(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        unit_cost_scale = _parse_unit_cost_scale(d.pop("unitCostScale", UNSET))
+
         cost_report_settings_request = cls(
             include_credits=include_credits,
             include_refunds=include_refunds,
@@ -319,6 +359,8 @@ class CostReportSettingsRequest:
             measure=measure,
             unit_cost_metric_id=unit_cost_metric_id,
             unit_cost_label_filter=unit_cost_label_filter,
+            unit_cost_calculation=unit_cost_calculation,
+            unit_cost_scale=unit_cost_scale,
         )
 
         return cost_report_settings_request

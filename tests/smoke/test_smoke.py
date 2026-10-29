@@ -72,7 +72,9 @@ class SmokeTests(unittest.TestCase):
         currency = self.first_workspace().currency
         provider = connect_provider.sync(
             client=self.client,
-            body=ConnectProviderRequest(key="custom", name=self.name, credentials=ConnectProviderRequestCredentials()),
+            body=ConnectProviderRequest(
+                key="custom", display_name=self.name, credentials=ConnectProviderRequestCredentials()
+            ),
         )
         assert provider is not None and hasattr(provider, "id")
         entry = CostEntry(

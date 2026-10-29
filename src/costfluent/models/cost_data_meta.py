@@ -25,6 +25,7 @@ class CostDataMeta:
         measure (str):
         total_records (int):
         presentation (CurrencyPresentation):
+        commitment_discounts (str):
         data_version (str):
         total_cost (None | str | Unset):
         currency (None | str | Unset):
@@ -38,6 +39,7 @@ class CostDataMeta:
     measure: str
     total_records: int
     presentation: CurrencyPresentation
+    commitment_discounts: str
     data_version: str
     total_cost: None | str | Unset = UNSET
     currency: None | str | Unset = UNSET
@@ -56,6 +58,8 @@ class CostDataMeta:
         total_records = self.total_records
 
         presentation = self.presentation.to_dict()
+
+        commitment_discounts = self.commitment_discounts
 
         data_version = self.data_version
 
@@ -97,6 +101,7 @@ class CostDataMeta:
                 "measure": measure,
                 "totalRecords": total_records,
                 "presentation": presentation,
+                "commitmentDiscounts": commitment_discounts,
                 "dataVersion": data_version,
             }
         )
@@ -127,6 +132,8 @@ class CostDataMeta:
         total_records = d.pop("totalRecords")
 
         presentation = CurrencyPresentation.from_dict(d.pop("presentation"))
+
+        commitment_discounts = d.pop("commitmentDiscounts")
 
         data_version = d.pop("dataVersion")
 
@@ -189,6 +196,7 @@ class CostDataMeta:
             measure=measure,
             total_records=total_records,
             presentation=presentation,
+            commitment_discounts=commitment_discounts,
             data_version=data_version,
             total_cost=total_cost,
             currency=currency,

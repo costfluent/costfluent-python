@@ -29,6 +29,8 @@ class CostReportSettingsResponse:
         compare_to_last_period (bool):
         measure (str):
         unit_cost_label_filter (list[UnitCostLabelConditionResponse]):
+        unit_cost_calculation (str):
+        unit_cost_scale (int):
         comparison_start_date (datetime.date | None | Unset):
         comparison_end_date (datetime.date | None | Unset):
         unit_cost_metric_id (None | str | Unset):
@@ -42,6 +44,8 @@ class CostReportSettingsResponse:
     compare_to_last_period: bool
     measure: str
     unit_cost_label_filter: list[UnitCostLabelConditionResponse]
+    unit_cost_calculation: str
+    unit_cost_scale: int
     comparison_start_date: datetime.date | None | Unset = UNSET
     comparison_end_date: datetime.date | None | Unset = UNSET
     unit_cost_metric_id: None | str | Unset = UNSET
@@ -65,6 +69,10 @@ class CostReportSettingsResponse:
         for unit_cost_label_filter_item_data in self.unit_cost_label_filter:
             unit_cost_label_filter_item = unit_cost_label_filter_item_data.to_dict()
             unit_cost_label_filter.append(unit_cost_label_filter_item)
+
+        unit_cost_calculation = self.unit_cost_calculation
+
+        unit_cost_scale = self.unit_cost_scale
 
         comparison_start_date: None | str | Unset
         if isinstance(self.comparison_start_date, Unset):
@@ -100,6 +108,8 @@ class CostReportSettingsResponse:
                 "compareToLastPeriod": compare_to_last_period,
                 "measure": measure,
                 "unitCostLabelFilter": unit_cost_label_filter,
+                "unitCostCalculation": unit_cost_calculation,
+                "unitCostScale": unit_cost_scale,
             }
         )
         if comparison_start_date is not UNSET:
@@ -140,6 +150,10 @@ class CostReportSettingsResponse:
             )
 
             unit_cost_label_filter.append(unit_cost_label_filter_item)
+
+        unit_cost_calculation = d.pop("unitCostCalculation")
+
+        unit_cost_scale = d.pop("unitCostScale")
 
         def _parse_comparison_start_date(data: object) -> datetime.date | None | Unset:
             if data is None:
@@ -199,6 +213,8 @@ class CostReportSettingsResponse:
             compare_to_last_period=compare_to_last_period,
             measure=measure,
             unit_cost_label_filter=unit_cost_label_filter,
+            unit_cost_calculation=unit_cost_calculation,
+            unit_cost_scale=unit_cost_scale,
             comparison_start_date=comparison_start_date,
             comparison_end_date=comparison_end_date,
             unit_cost_metric_id=unit_cost_metric_id,

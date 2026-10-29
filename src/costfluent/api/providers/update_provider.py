@@ -126,10 +126,10 @@ def sync_detailed(
 ) -> Response[ApiError | ProviderResponse]:
     """Update provider
 
-     Updates a provider in place: its name, description, settings, credentials or sync frequency. A field
-    left out keeps its value; clearDescription and clearSettings remove theirs. An update that another
-    write to the provider overtook, or whose credentials or settings changed while the new credentials
-    or export location were verified, answers 409 concurrency_conflict and changes nothing.
+     Updates a provider in place: its display name, description, settings, credentials or sync frequency.
+    A field left out keeps its value; clearDescription and clearSettings remove theirs. An update that
+    another write to the provider overtook, or whose credentials or settings changed while the new
+    credentials or export location were verified, answers 409 concurrency_conflict and changes nothing.
 
     Needs an organization token with `manageProviders`.
 
@@ -168,10 +168,10 @@ def sync(
 ) -> ApiError | ProviderResponse | None:
     """Update provider
 
-     Updates a provider in place: its name, description, settings, credentials or sync frequency. A field
-    left out keeps its value; clearDescription and clearSettings remove theirs. An update that another
-    write to the provider overtook, or whose credentials or settings changed while the new credentials
-    or export location were verified, answers 409 concurrency_conflict and changes nothing.
+     Updates a provider in place: its display name, description, settings, credentials or sync frequency.
+    A field left out keeps its value; clearDescription and clearSettings remove theirs. An update that
+    another write to the provider overtook, or whose credentials or settings changed while the new
+    credentials or export location were verified, answers 409 concurrency_conflict and changes nothing.
 
     Needs an organization token with `manageProviders`.
 
@@ -205,10 +205,10 @@ async def asyncio_detailed(
 ) -> Response[ApiError | ProviderResponse]:
     """Update provider
 
-     Updates a provider in place: its name, description, settings, credentials or sync frequency. A field
-    left out keeps its value; clearDescription and clearSettings remove theirs. An update that another
-    write to the provider overtook, or whose credentials or settings changed while the new credentials
-    or export location were verified, answers 409 concurrency_conflict and changes nothing.
+     Updates a provider in place: its display name, description, settings, credentials or sync frequency.
+    A field left out keeps its value; clearDescription and clearSettings remove theirs. An update that
+    another write to the provider overtook, or whose credentials or settings changed while the new
+    credentials or export location were verified, answers 409 concurrency_conflict and changes nothing.
 
     Needs an organization token with `manageProviders`.
 
@@ -245,10 +245,10 @@ async def asyncio(
 ) -> ApiError | ProviderResponse | None:
     """Update provider
 
-     Updates a provider in place: its name, description, settings, credentials or sync frequency. A field
-    left out keeps its value; clearDescription and clearSettings remove theirs. An update that another
-    write to the provider overtook, or whose credentials or settings changed while the new credentials
-    or export location were verified, answers 409 concurrency_conflict and changes nothing.
+     Updates a provider in place: its display name, description, settings, credentials or sync frequency.
+    A field left out keeps its value; clearDescription and clearSettings remove theirs. An update that
+    another write to the provider overtook, or whose credentials or settings changed while the new
+    credentials or export location were verified, answers 409 concurrency_conflict and changes nothing.
 
     Needs an organization token with `manageProviders`.
 
