@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, Self, TypeVar
+from typing import TYPE_CHECKING, Any, Self, TypeVar, cast
 
 from attrs import define as _attrs_define
 
@@ -11,6 +11,7 @@ from ..types import UNSET, Unset
 if TYPE_CHECKING:
     from ..models.kubernetes_report_node import KubernetesReportNode
     from ..models.kubernetes_report_pod import KubernetesReportPod
+    from ..models.kubernetes_report_volume import KubernetesReportVolume
 
 
 T = TypeVar("T", bound="KubernetesReport")
@@ -28,6 +29,7 @@ class KubernetesReport:
         window_end (datetime.datetime | Unset):
         nodes (list[KubernetesReportNode] | Unset):
         pods (list[KubernetesReportPod] | Unset):
+        volumes (list[KubernetesReportVolume] | None | Unset):
     """
 
     schema_version: int | Unset = UNSET
@@ -38,6 +40,7 @@ class KubernetesReport:
     window_end: datetime.datetime | Unset = UNSET
     nodes: list[KubernetesReportNode] | Unset = UNSET
     pods: list[KubernetesReportPod] | Unset = UNSET
+    volumes: list[KubernetesReportVolume] | None | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         schema_version = self.schema_version
@@ -70,6 +73,18 @@ class KubernetesReport:
                 pods_item = pods_item_data.to_dict()
                 pods.append(pods_item)
 
+        volumes: list[dict[str, Any]] | None | Unset
+        if isinstance(self.volumes, Unset):
+            volumes = UNSET
+        elif isinstance(self.volumes, list):
+            volumes = []
+            for volumes_type_0_item_data in self.volumes:
+                volumes_type_0_item = volumes_type_0_item_data.to_dict()
+                volumes.append(volumes_type_0_item)
+
+        else:
+            volumes = self.volumes
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update({})
@@ -89,6 +104,8 @@ class KubernetesReport:
             field_dict["nodes"] = nodes
         if pods is not UNSET:
             field_dict["pods"] = pods
+        if volumes is not UNSET:
+            field_dict["volumes"] = volumes
 
         return field_dict
 
@@ -96,6 +113,7 @@ class KubernetesReport:
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.kubernetes_report_node import KubernetesReportNode
         from ..models.kubernetes_report_pod import KubernetesReportPod
+        from ..models.kubernetes_report_volume import KubernetesReportVolume
 
         d = dict(src_dict)
         schema_version = d.pop("schema_version", UNSET)
@@ -138,6 +156,30 @@ class KubernetesReport:
 
                 pods.append(pods_item)
 
+        def _parse_volumes(data: object) -> list[KubernetesReportVolume] | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, list):
+                    raise TypeError()
+                volumes_type_0 = []
+                _volumes_type_0 = data
+                for volumes_type_0_item_data in _volumes_type_0:
+                    volumes_type_0_item = KubernetesReportVolume.from_dict(
+                        volumes_type_0_item_data
+                    )
+
+                    volumes_type_0.append(volumes_type_0_item)
+
+                return volumes_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(list[KubernetesReportVolume] | None | Unset, data)
+
+        volumes = _parse_volumes(d.pop("volumes", UNSET))
+
         kubernetes_report = cls(
             schema_version=schema_version,
             cluster_id=cluster_id,
@@ -147,6 +189,7 @@ class KubernetesReport:
             window_end=window_end,
             nodes=nodes,
             pods=pods,
+            volumes=volumes,
         )
 
         return kubernetes_report

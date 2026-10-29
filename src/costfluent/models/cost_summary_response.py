@@ -22,6 +22,7 @@ class CostSummaryResponse:
     """
     Attributes:
         presentation (CurrencyPresentation):
+        commitment_discounts (str):
         top_services (list[ServiceCostBreakdown]):
         by_provider (list[ProviderCostBreakdown]):
         total_cost (None | str | Unset):
@@ -36,6 +37,7 @@ class CostSummaryResponse:
     """
 
     presentation: CurrencyPresentation
+    commitment_discounts: str
     top_services: list[ServiceCostBreakdown]
     by_provider: list[ProviderCostBreakdown]
     total_cost: None | str | Unset = UNSET
@@ -50,6 +52,8 @@ class CostSummaryResponse:
 
     def to_dict(self) -> dict[str, Any]:
         presentation = self.presentation.to_dict()
+
+        commitment_discounts = self.commitment_discounts
 
         top_services = []
         for top_services_item_data in self.top_services:
@@ -126,6 +130,7 @@ class CostSummaryResponse:
         field_dict.update(
             {
                 "presentation": presentation,
+                "commitmentDiscounts": commitment_discounts,
                 "topServices": top_services,
                 "byProvider": by_provider,
             }
@@ -159,6 +164,8 @@ class CostSummaryResponse:
 
         d = dict(src_dict)
         presentation = CurrencyPresentation.from_dict(d.pop("presentation"))
+
+        commitment_discounts = d.pop("commitmentDiscounts")
 
         top_services = []
         _top_services = d.pop("topServices")
@@ -285,6 +292,7 @@ class CostSummaryResponse:
 
         cost_summary_response = cls(
             presentation=presentation,
+            commitment_discounts=commitment_discounts,
             top_services=top_services,
             by_provider=by_provider,
             total_cost=total_cost,

@@ -18,7 +18,7 @@ class ProviderResponse:
         id (str):
         type_ (str):
         key (str):
-        name (str):
+        display_name (str):
         status (str):
         sync_frequency_minutes (int):
         created_at (datetime.datetime):
@@ -35,7 +35,7 @@ class ProviderResponse:
     id: str
     type_: str
     key: str
-    name: str
+    display_name: str
     status: str
     sync_frequency_minutes: int
     created_at: datetime.datetime
@@ -55,7 +55,7 @@ class ProviderResponse:
 
         key = self.key
 
-        name = self.name
+        display_name = self.display_name
 
         status = self.status
 
@@ -124,7 +124,7 @@ class ProviderResponse:
                 "id": id,
                 "type": type_,
                 "key": key,
-                "name": name,
+                "displayName": display_name,
                 "status": status,
                 "syncFrequencyMinutes": sync_frequency_minutes,
                 "createdAt": created_at,
@@ -158,7 +158,7 @@ class ProviderResponse:
 
         key = d.pop("key")
 
-        name = d.pop("name")
+        display_name = d.pop("displayName")
 
         status = d.pop("status")
 
@@ -266,7 +266,7 @@ class ProviderResponse:
             id=id,
             type_=type_,
             key=key,
-            name=name,
+            display_name=display_name,
             status=status,
             sync_frequency_minutes=sync_frequency_minutes,
             created_at=created_at,

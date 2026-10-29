@@ -18,11 +18,13 @@ class ReportUnitCostPointResponse:
         date (datetime.date):
         metric_amount (None | str | Unset):
         unit_cost (None | str | Unset):
+        value (None | str | Unset):
     """
 
     date: datetime.date
     metric_amount: None | str | Unset = UNSET
     unit_cost: None | str | Unset = UNSET
+    value: None | str | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         date = self.date.isoformat()
@@ -39,6 +41,12 @@ class ReportUnitCostPointResponse:
         else:
             unit_cost = self.unit_cost
 
+        value: None | str | Unset
+        if isinstance(self.value, Unset):
+            value = UNSET
+        else:
+            value = self.value
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update(
@@ -50,6 +58,8 @@ class ReportUnitCostPointResponse:
             field_dict["metricAmount"] = metric_amount
         if unit_cost is not UNSET:
             field_dict["unitCost"] = unit_cost
+        if value is not UNSET:
+            field_dict["value"] = value
 
         return field_dict
 
@@ -76,10 +86,20 @@ class ReportUnitCostPointResponse:
 
         unit_cost = _parse_unit_cost(d.pop("unitCost", UNSET))
 
+        def _parse_value(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        value = _parse_value(d.pop("value", UNSET))
+
         report_unit_cost_point_response = cls(
             date=date,
             metric_amount=metric_amount,
             unit_cost=unit_cost,
+            value=value,
         )
 
         return report_unit_cost_point_response

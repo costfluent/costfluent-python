@@ -15,13 +15,13 @@ class ProviderCreatedResponse:
         id (str):
         type_ (str):
         key (str):
-        name (str):
+        display_name (str):
     """
 
     id: str
     type_: str
     key: str
-    name: str
+    display_name: str
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
@@ -30,7 +30,7 @@ class ProviderCreatedResponse:
 
         key = self.key
 
-        name = self.name
+        display_name = self.display_name
 
         field_dict: dict[str, Any] = {}
 
@@ -39,7 +39,7 @@ class ProviderCreatedResponse:
                 "id": id,
                 "type": type_,
                 "key": key,
-                "name": name,
+                "displayName": display_name,
             }
         )
 
@@ -54,13 +54,13 @@ class ProviderCreatedResponse:
 
         key = d.pop("key")
 
-        name = d.pop("name")
+        display_name = d.pop("displayName")
 
         provider_created_response = cls(
             id=id,
             type_=type_,
             key=key,
-            name=name,
+            display_name=display_name,
         )
 
         return provider_created_response

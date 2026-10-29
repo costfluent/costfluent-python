@@ -36,6 +36,7 @@ class KubernetesReportPod:
         annotations (KubernetesReportPodAnnotationsType0 | None | Unset):
         namespace_labels (KubernetesReportPodNamespaceLabelsType0 | None | Unset):
         containers (list[KubernetesReportContainer] | Unset):
+        claims (list[str] | None | Unset):
     """
 
     namespace: str | Unset = UNSET
@@ -47,6 +48,7 @@ class KubernetesReportPod:
     annotations: KubernetesReportPodAnnotationsType0 | None | Unset = UNSET
     namespace_labels: KubernetesReportPodNamespaceLabelsType0 | None | Unset = UNSET
     containers: list[KubernetesReportContainer] | Unset = UNSET
+    claims: list[str] | None | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.kubernetes_report_pod_annotations_type_0 import (
@@ -108,6 +110,15 @@ class KubernetesReportPod:
                 containers_item = containers_item_data.to_dict()
                 containers.append(containers_item)
 
+        claims: list[str] | None | Unset
+        if isinstance(self.claims, Unset):
+            claims = UNSET
+        elif isinstance(self.claims, list):
+            claims = self.claims
+
+        else:
+            claims = self.claims
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update({})
@@ -129,6 +140,8 @@ class KubernetesReportPod:
             field_dict["namespace_labels"] = namespace_labels
         if containers is not UNSET:
             field_dict["containers"] = containers
+        if claims is not UNSET:
+            field_dict["claims"] = claims
 
         return field_dict
 
@@ -240,6 +253,23 @@ class KubernetesReportPod:
 
                 containers.append(containers_item)
 
+        def _parse_claims(data: object) -> list[str] | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, list):
+                    raise TypeError()
+                claims_type_0 = cast(list[str], data)
+
+                return claims_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(list[str] | None | Unset, data)
+
+        claims = _parse_claims(d.pop("claims", UNSET))
+
         kubernetes_report_pod = cls(
             namespace=namespace,
             name=name,
@@ -250,6 +280,7 @@ class KubernetesReportPod:
             annotations=annotations,
             namespace_labels=namespace_labels,
             containers=containers,
+            claims=claims,
         )
 
         return kubernetes_report_pod

@@ -25,6 +25,7 @@ class CostReportResponse:
         group_by (list[ReportGroupingResponse]):
         date_interval (str):
         chart_type (str):
+        chart_axis (str):
         date_bin (str):
         settings (CostReportSettingsResponse):
         created_at (datetime.datetime):
@@ -41,6 +42,7 @@ class CostReportResponse:
     group_by: list[ReportGroupingResponse]
     date_interval: str
     chart_type: str
+    chart_axis: str
     date_bin: str
     settings: CostReportSettingsResponse
     created_at: datetime.datetime
@@ -64,6 +66,8 @@ class CostReportResponse:
         date_interval = self.date_interval
 
         chart_type = self.chart_type
+
+        chart_axis = self.chart_axis
 
         date_bin = self.date_bin
 
@@ -118,6 +122,7 @@ class CostReportResponse:
                 "groupBy": group_by,
                 "dateInterval": date_interval,
                 "chartType": chart_type,
+                "chartAxis": chart_axis,
                 "dateBin": date_bin,
                 "settings": settings,
                 "createdAt": created_at,
@@ -157,6 +162,8 @@ class CostReportResponse:
         date_interval = d.pop("dateInterval")
 
         chart_type = d.pop("chartType")
+
+        chart_axis = d.pop("chartAxis")
 
         date_bin = d.pop("dateBin")
 
@@ -241,6 +248,7 @@ class CostReportResponse:
             group_by=group_by,
             date_interval=date_interval,
             chart_type=chart_type,
+            chart_axis=chart_axis,
             date_bin=date_bin,
             settings=settings,
             created_at=created_at,

@@ -58,6 +58,12 @@ class FakeApi:
         # A copy, so one scripted response can answer several requests and several tests.
         return httpx.Response(reply.status_code, headers=reply.headers, content=reply.content)
 
-    def client(self, base_url: str = BASE_URL) -> AuthenticatedClient:
+    def client(self, base_url: str = BASE_URL, max_retries: int | None = None) -> AuthenticatedClient:
         transport = httpx.MockTransport(self.handle)
-        return create_client(TOKEN, base_url=base_url, transport=transport, async_transport=transport)
+        return create_client(
+            TOKEN,
+            base_url=base_url,
+            transport=transport,
+            async_transport=transport,
+            **({} if max_retries is None else {"max_retries": max_retries}),
+        )

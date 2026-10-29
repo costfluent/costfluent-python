@@ -4,6 +4,7 @@ typed errors and pagination, with the same rules as the Costfluent Go client."""
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import email.utils
 import itertools
 import random
@@ -282,6 +283,21 @@ async def _async_raise_for_status(response: httpx.Response) -> None:
         raise CostfluentError.from_response(response)
 
 
+# The requests paginate's one call to the operation sends, while it listens. Later pages reuse page 1's
+# path: a link's path is the server's view of itself, which a gateway can drop or replace its prefix in,
+# while page 1's path has already reached the API through this client.
+_requested: contextvars.ContextVar[list[httpx.URL] | None] = contextvars.ContextVar("_requested", default=None)
+
+
+def _record_request(request: httpx.Request) -> None:
+    if (requested := _requested.get()) is not None:
+        requested.append(request.url)
+
+
+async def _async_record_request(request: httpx.Request) -> None:
+    _record_request(request)
+
+
 def create_client(
     token: str,
     *,
@@ -309,7 +325,7 @@ def create_client(
             headers=headers,
             timeout=timeout,
             transport=_RetryTransport(transport or httpx.HTTPTransport(), max_retries),
-            event_hooks={"request": [_add_idempotency_key], "response": [_raise_for_status]},
+            event_hooks={"request": [_add_idempotency_key, _record_request], "response": [_raise_for_status]},
         )
     )
     client.set_async_httpx_client(
@@ -318,7 +334,10 @@ def create_client(
             headers=headers,
             timeout=timeout,
             transport=_AsyncRetryTransport(async_transport or httpx.AsyncHTTPTransport(), max_retries),
-            event_hooks={"request": [_async_add_idempotency_key], "response": [_async_raise_for_status]},
+            event_hooks={
+                "request": [_async_add_idempotency_key, _async_record_request],
+                "response": [_async_raise_for_status],
+            },
         )
     )
     return client
@@ -350,13 +369,31 @@ def _as_page(result: object) -> _Page[Any]:
     return result  # type: ignore[return-value]
 
 
-def _next_url(page: _Page[Any], base_url: httpx.URL) -> httpx.URL | None:
-    """The next page on the client's own origin: the token goes only where the client was pointed,
-    whatever host the link names."""
+def _last_segment(url: httpx.URL) -> bytes:
+    return url.raw_path.partition(b"?")[0].rpartition(b"/")[2]
+
+
+def _next_url(page: _Page[Any], requested: Sequence[httpx.URL], base_url: httpx.URL) -> httpx.URL | None:
+    """The next page: the scheme, host and path from the client, only the query from the link.
+
+    The host is the client's own, so the token goes only where the client was pointed, whatever host
+    the link names. The path is the one page 1 was requested on, so a base URL's path prefix stays.
+    When paginate saw no such request (a client not built by ``create_client``, or a ``with_*`` copy of
+    one), the path is the link's, which drops a base URL's prefix.
+    """
     link = page.links.next_
     if not isinstance(link, str) or not link:
         return None
-    return base_url.copy_with(raw_path=httpx.URL(link).raw_path)
+    link_url = httpx.URL(link)
+    segment = _last_segment(link_url)
+    # A wrapper may send other requests before or after its list call; the last request with the
+    # link's final segment is the list whose page it returned.
+    first = next((url for url in reversed(requested) if _last_segment(url) == segment), None)
+    if first is None:
+        return base_url.copy_with(raw_path=link_url.raw_path)
+    path = first.raw_path.partition(b"?")[0]
+    query = link_url.query
+    return base_url.copy_with(raw_path=path + b"?" + query if query else path)
 
 
 def paginate(
@@ -365,13 +402,19 @@ def paginate(
     """Every item of a list, following ``links.next`` page by page.
 
     ``operation`` is a generated ``sync`` function, called once with ``client`` and ``kwargs``:
-    ``paginate(list_workspaces.sync, client=client, limit=100)``.
+    ``paginate(list_workspaces.sync, client=client, limit=100)``. Later pages are requested on the
+    client's base URL and the path page 1 was requested on, with the query of ``links.next``.
     """
-    page = _as_page(operation(client=client, **kwargs))
+    requested: list[httpx.URL] = []
+    token = _requested.set(requested)
+    try:
+        page = _as_page(operation(client=client, **kwargs))
+    finally:
+        _requested.reset(token)
     httpx_client = client.get_httpx_client()
     while True:
         yield from page.data
-        url = _next_url(page, httpx_client.base_url)
+        url = _next_url(page, requested, httpx_client.base_url)
         if url is None:
             return
         page = type(page).from_dict(httpx_client.get(url).json())
@@ -381,12 +424,17 @@ async def apaginate(
     operation: Callable[..., Awaitable[_Page[T] | ApiError | None]], /, *, client: AuthenticatedClient, **kwargs: Any
 ) -> AsyncIterator[T]:
     """``paginate`` for a generated ``asyncio`` function."""
-    page = _as_page(await operation(client=client, **kwargs))
+    requested: list[httpx.URL] = []
+    token = _requested.set(requested)
+    try:
+        page = _as_page(await operation(client=client, **kwargs))
+    finally:
+        _requested.reset(token)
     httpx_client = client.get_async_httpx_client()
     while True:
         for item in page.data:
             yield item
-        url = _next_url(page, httpx_client.base_url)
+        url = _next_url(page, requested, httpx_client.base_url)
         if url is None:
             return
         page = type(page).from_dict((await httpx_client.get(url)).json())

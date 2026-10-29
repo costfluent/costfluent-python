@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Self, TypeVar, cast
 
 from attrs import define as _attrs_define
 
+from ..models.chart_axis import ChartAxis
 from ..models.chart_type import ChartType
 from ..types import UNSET, Unset
 
@@ -30,6 +31,7 @@ class CreateCostReportRequest:
         start_date (datetime.date | None | Unset):
         end_date (datetime.date | None | Unset):
         chart_type (ChartType | Unset):
+        chart_axis (ChartAxis | None | Unset):
         date_bin (None | str | Unset):
         settings (CostReportSettingsRequest | None | Unset):
     """
@@ -43,6 +45,7 @@ class CreateCostReportRequest:
     start_date: datetime.date | None | Unset = UNSET
     end_date: datetime.date | None | Unset = UNSET
     chart_type: ChartType | Unset = UNSET
+    chart_axis: ChartAxis | None | Unset = UNSET
     date_bin: None | str | Unset = UNSET
     settings: CostReportSettingsRequest | None | Unset = UNSET
 
@@ -103,6 +106,14 @@ class CreateCostReportRequest:
         if not isinstance(self.chart_type, Unset):
             chart_type = self.chart_type.value
 
+        chart_axis: None | str | Unset
+        if isinstance(self.chart_axis, Unset):
+            chart_axis = UNSET
+        elif isinstance(self.chart_axis, ChartAxis):
+            chart_axis = self.chart_axis.value
+        else:
+            chart_axis = self.chart_axis
+
         date_bin: None | str | Unset
         if isinstance(self.date_bin, Unset):
             date_bin = UNSET
@@ -139,6 +150,8 @@ class CreateCostReportRequest:
             field_dict["endDate"] = end_date
         if chart_type is not UNSET:
             field_dict["chartType"] = chart_type
+        if chart_axis is not UNSET:
+            field_dict["chartAxis"] = chart_axis
         if date_bin is not UNSET:
             field_dict["dateBin"] = date_bin
         if settings is not UNSET:
@@ -248,6 +261,23 @@ class CreateCostReportRequest:
         else:
             chart_type = ChartType(_chart_type)
 
+        def _parse_chart_axis(data: object) -> ChartAxis | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                chart_axis_type_0 = ChartAxis(data)
+
+                return chart_axis_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(ChartAxis | None | Unset, data)
+
+        chart_axis = _parse_chart_axis(d.pop("chartAxis", UNSET))
+
         def _parse_date_bin(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -284,6 +314,7 @@ class CreateCostReportRequest:
             start_date=start_date,
             end_date=end_date,
             chart_type=chart_type,
+            chart_axis=chart_axis,
             date_bin=date_bin,
             settings=settings,
         )

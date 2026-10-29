@@ -26,6 +26,7 @@ class UpdateWorkspaceRequest:
         conversion_currency (None | str | Unset):
         conversion_method (None | str | Unset):
         enable_automatic_syncing (bool | None | Unset):
+        blend_commitment_discounts (bool | None | Unset):
         time_zone (None | str | Unset):
         report_defaults (None | Unset | WorkspaceReportDefaultsRequest):
         anomalies_exclude_marketplace (bool | None | Unset):
@@ -39,6 +40,7 @@ class UpdateWorkspaceRequest:
     conversion_currency: None | str | Unset = UNSET
     conversion_method: None | str | Unset = UNSET
     enable_automatic_syncing: bool | None | Unset = UNSET
+    blend_commitment_discounts: bool | None | Unset = UNSET
     time_zone: None | str | Unset = UNSET
     report_defaults: None | Unset | WorkspaceReportDefaultsRequest = UNSET
     anomalies_exclude_marketplace: bool | None | Unset = UNSET
@@ -85,6 +87,12 @@ class UpdateWorkspaceRequest:
             enable_automatic_syncing = UNSET
         else:
             enable_automatic_syncing = self.enable_automatic_syncing
+
+        blend_commitment_discounts: bool | None | Unset
+        if isinstance(self.blend_commitment_discounts, Unset):
+            blend_commitment_discounts = UNSET
+        else:
+            blend_commitment_discounts = self.blend_commitment_discounts
 
         time_zone: None | str | Unset
         if isinstance(self.time_zone, Unset):
@@ -133,6 +141,8 @@ class UpdateWorkspaceRequest:
             field_dict["conversionMethod"] = conversion_method
         if enable_automatic_syncing is not UNSET:
             field_dict["enableAutomaticSyncing"] = enable_automatic_syncing
+        if blend_commitment_discounts is not UNSET:
+            field_dict["blendCommitmentDiscounts"] = blend_commitment_discounts
         if time_zone is not UNSET:
             field_dict["timeZone"] = time_zone
         if report_defaults is not UNSET:
@@ -216,6 +226,17 @@ class UpdateWorkspaceRequest:
             d.pop("enableAutomaticSyncing", UNSET)
         )
 
+        def _parse_blend_commitment_discounts(data: object) -> bool | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(bool | None | Unset, data)
+
+        blend_commitment_discounts = _parse_blend_commitment_discounts(
+            d.pop("blendCommitmentDiscounts", UNSET)
+        )
+
         def _parse_time_zone(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -286,6 +307,7 @@ class UpdateWorkspaceRequest:
             conversion_currency=conversion_currency,
             conversion_method=conversion_method,
             enable_automatic_syncing=enable_automatic_syncing,
+            blend_commitment_discounts=blend_commitment_discounts,
             time_zone=time_zone,
             report_defaults=report_defaults,
             anomalies_exclude_marketplace=anomalies_exclude_marketplace,

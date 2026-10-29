@@ -2,6 +2,8 @@ import datetime
 import re
 import unittest
 
+import httpx
+
 from costfluent import CONTRACT_SHA256, CostfluentError, __version__
 from costfluent.api.cost_data import get_cost_data
 from costfluent.api.folders import create_folder, get_folder
@@ -163,6 +165,31 @@ class ErrorTests(unittest.TestCase):
         self.assertEqual((raised.exception.status, raised.exception.code), (401, ""))
         self.assertIsNone(raised.exception.problem)
 
+    def test_an_unreadable_problem_body_is_reported_as_none(self) -> None:
+        # A proxy's page or a truncated answer under the problem media type.
+        bodies = {
+            "empty": b"",
+            "html": b"<html>",
+            "null": b"null",
+            "no code": b'{"type": "about:blank", "title": "x", "status": 403, "retryable": false}',
+        }
+        for name, body in bodies.items():
+            with self.subTest(name):
+                api = FakeApi(
+                    httpx.Response(
+                        403,
+                        content=body,
+                        headers={"Content-Type": "application/problem+json", "X-Request-Id": "req_1"},
+                    )
+                )
+
+                with self.assertRaises(CostfluentError) as raised:
+                    get_folder.sync(client=api.client(), folder_id="fld_1", workspace_id="ws_1")
+
+                error = raised.exception
+                self.assertEqual((error.status, error.code, error.request_id), (403, "", "req_1"))
+                self.assertIsNone(error.problem)
+
 
 class MoneyTests(unittest.TestCase):
     def test_amounts_stay_the_exact_decimal_strings_the_api_sent(self) -> None:
@@ -181,6 +208,7 @@ class MoneyTests(unittest.TestCase):
             "measure": "cost",
             "totalRecords": 1,
             "presentation": {"conversions": [], "unconverted": [], "totalsByCurrency": []},
+            "commitmentDiscounts": "asApplied",
             "totalCost": "123456789012.12345678",
             "dataVersion": "3f2a9c0d1e4b5a68",
         }

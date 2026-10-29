@@ -70,6 +70,11 @@ def _parse_response(
 
         return response_408
 
+    if response.status_code == 409:
+        response_409 = ApiError.from_dict(response.json())
+
+        return response_409
+
     if response.status_code == 412:
         response_412 = ApiError.from_dict(response.json())
 
@@ -121,7 +126,8 @@ def sync_detailed(
 ) -> Response[ApiError | VirtualTagResponse]:
     """Update virtual tag
 
-     Updates a virtual tag and returns it as stored.
+     Updates a virtual tag and returns it as stored. Refused with 409 conflict when the new key is
+    another enabled virtual tag's in the workspace.
 
     Needs a token with `manageTags` on the workspace.
 
@@ -160,7 +166,8 @@ def sync(
 ) -> ApiError | VirtualTagResponse | None:
     """Update virtual tag
 
-     Updates a virtual tag and returns it as stored.
+     Updates a virtual tag and returns it as stored. Refused with 409 conflict when the new key is
+    another enabled virtual tag's in the workspace.
 
     Needs a token with `manageTags` on the workspace.
 
@@ -194,7 +201,8 @@ async def asyncio_detailed(
 ) -> Response[ApiError | VirtualTagResponse]:
     """Update virtual tag
 
-     Updates a virtual tag and returns it as stored.
+     Updates a virtual tag and returns it as stored. Refused with 409 conflict when the new key is
+    another enabled virtual tag's in the workspace.
 
     Needs a token with `manageTags` on the workspace.
 
@@ -231,7 +239,8 @@ async def asyncio(
 ) -> ApiError | VirtualTagResponse | None:
     """Update virtual tag
 
-     Updates a virtual tag and returns it as stored.
+     Updates a virtual tag and returns it as stored. Refused with 409 conflict when the new key is
+    another enabled virtual tag's in the workspace.
 
     Needs a token with `manageTags` on the workspace.
 

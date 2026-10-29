@@ -11,6 +11,7 @@ from ..types import UNSET, Unset
 if TYPE_CHECKING:
     from ..models.report_breakdown_response import ReportBreakdownResponse
     from ..models.report_comparison_response import ReportComparisonResponse
+    from ..models.report_forecast_response import ReportForecastResponse
     from ..models.report_summary_response import ReportSummaryResponse
     from ..models.report_time_series_response import ReportTimeSeriesResponse
     from ..models.report_unit_cost_response import ReportUnitCostResponse
@@ -30,6 +31,7 @@ class CostReportDataResponse:
         end_date (datetime.date):
         history_floor (datetime.date | None | Unset):
         comparison (None | ReportComparisonResponse | Unset):
+        forecast (None | ReportForecastResponse | Unset):
         data_through (datetime.date | None | Unset):
         unit_cost (None | ReportUnitCostResponse | Unset):
     """
@@ -41,11 +43,13 @@ class CostReportDataResponse:
     end_date: datetime.date
     history_floor: datetime.date | None | Unset = UNSET
     comparison: None | ReportComparisonResponse | Unset = UNSET
+    forecast: None | ReportForecastResponse | Unset = UNSET
     data_through: datetime.date | None | Unset = UNSET
     unit_cost: None | ReportUnitCostResponse | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.report_comparison_response import ReportComparisonResponse
+        from ..models.report_forecast_response import ReportForecastResponse
         from ..models.report_unit_cost_response import ReportUnitCostResponse
 
         summary = self.summary.to_dict()
@@ -80,6 +84,14 @@ class CostReportDataResponse:
         else:
             comparison = self.comparison
 
+        forecast: dict[str, Any] | None | Unset
+        if isinstance(self.forecast, Unset):
+            forecast = UNSET
+        elif isinstance(self.forecast, ReportForecastResponse):
+            forecast = self.forecast.to_dict()
+        else:
+            forecast = self.forecast
+
         data_through: None | str | Unset
         if isinstance(self.data_through, Unset):
             data_through = UNSET
@@ -111,6 +123,8 @@ class CostReportDataResponse:
             field_dict["historyFloor"] = history_floor
         if comparison is not UNSET:
             field_dict["comparison"] = comparison
+        if forecast is not UNSET:
+            field_dict["forecast"] = forecast
         if data_through is not UNSET:
             field_dict["dataThrough"] = data_through
         if unit_cost is not UNSET:
@@ -122,6 +136,7 @@ class CostReportDataResponse:
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.report_breakdown_response import ReportBreakdownResponse
         from ..models.report_comparison_response import ReportComparisonResponse
+        from ..models.report_forecast_response import ReportForecastResponse
         from ..models.report_summary_response import ReportSummaryResponse
         from ..models.report_time_series_response import ReportTimeSeriesResponse
         from ..models.report_unit_cost_response import ReportUnitCostResponse
@@ -181,6 +196,23 @@ class CostReportDataResponse:
 
         comparison = _parse_comparison(d.pop("comparison", UNSET))
 
+        def _parse_forecast(data: object) -> None | ReportForecastResponse | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                forecast_type_0 = ReportForecastResponse.from_dict(data)
+
+                return forecast_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | ReportForecastResponse | Unset, data)
+
+        forecast = _parse_forecast(d.pop("forecast", UNSET))
+
         def _parse_data_through(data: object) -> datetime.date | None | Unset:
             if data is None:
                 return data
@@ -223,6 +255,7 @@ class CostReportDataResponse:
             end_date=end_date,
             history_floor=history_floor,
             comparison=comparison,
+            forecast=forecast,
             data_through=data_through,
             unit_cost=unit_cost,
         )

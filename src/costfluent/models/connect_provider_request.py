@@ -25,7 +25,7 @@ class ConnectProviderRequest:
     Attributes:
         key (str):
         credentials (ConnectProviderRequestCredentials):
-        name (None | str | Unset):
+        display_name (None | str | Unset):
         description (None | str | Unset):
         parent_provider_id (None | str | Unset):
         external_id (None | str | Unset):
@@ -35,7 +35,7 @@ class ConnectProviderRequest:
 
     key: str
     credentials: ConnectProviderRequestCredentials
-    name: None | str | Unset = UNSET
+    display_name: None | str | Unset = UNSET
     description: None | str | Unset = UNSET
     parent_provider_id: None | str | Unset = UNSET
     external_id: None | str | Unset = UNSET
@@ -51,11 +51,11 @@ class ConnectProviderRequest:
 
         credentials = self.credentials.to_dict()
 
-        name: None | str | Unset
-        if isinstance(self.name, Unset):
-            name = UNSET
+        display_name: None | str | Unset
+        if isinstance(self.display_name, Unset):
+            display_name = UNSET
         else:
-            name = self.name
+            display_name = self.display_name
 
         description: None | str | Unset
         if isinstance(self.description, Unset):
@@ -93,8 +93,8 @@ class ConnectProviderRequest:
                 "credentials": credentials,
             }
         )
-        if name is not UNSET:
-            field_dict["name"] = name
+        if display_name is not UNSET:
+            field_dict["displayName"] = display_name
         if description is not UNSET:
             field_dict["description"] = description
         if parent_provider_id is not UNSET:
@@ -122,14 +122,14 @@ class ConnectProviderRequest:
 
         credentials = ConnectProviderRequestCredentials.from_dict(d.pop("credentials"))
 
-        def _parse_name(data: object) -> None | str | Unset:
+        def _parse_display_name(data: object) -> None | str | Unset:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
             return cast(None | str | Unset, data)
 
-        name = _parse_name(d.pop("name", UNSET))
+        display_name = _parse_display_name(d.pop("displayName", UNSET))
 
         def _parse_description(data: object) -> None | str | Unset:
             if data is None:
@@ -182,7 +182,7 @@ class ConnectProviderRequest:
         connect_provider_request = cls(
             key=key,
             credentials=credentials,
-            name=name,
+            display_name=display_name,
             description=description,
             parent_provider_id=parent_provider_id,
             external_id=external_id,
