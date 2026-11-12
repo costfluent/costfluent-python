@@ -131,8 +131,8 @@ def sync_detailed(
     it again. Submitted costs count toward the organization's monthly volume, one row for each day a
     cost is spread over, and the batch is checked whole: one that would pass a monthly volume limit set
     for the organization commits nothing. Each entry becomes one daily record per day of its charge
-    period; a request may become at most 37,500 records and, counting a spread entry once per day, 48
-    MiB of entries, and is refused with 400 otherwise.
+    period; a request may become at most 7,500 records and, counting a spread entry once per day,
+    10,000,000 bytes of entries, and is refused with 400 otherwise.
 
     Needs an organization token with `syncProviders` for every request, and `manageProviders` as well
     when it replaces lines (replaceLines: true), which removes their earlier days.
@@ -177,8 +177,8 @@ def sync(
     it again. Submitted costs count toward the organization's monthly volume, one row for each day a
     cost is spread over, and the batch is checked whole: one that would pass a monthly volume limit set
     for the organization commits nothing. Each entry becomes one daily record per day of its charge
-    period; a request may become at most 37,500 records and, counting a spread entry once per day, 48
-    MiB of entries, and is refused with 400 otherwise.
+    period; a request may become at most 7,500 records and, counting a spread entry once per day,
+    10,000,000 bytes of entries, and is refused with 400 otherwise.
 
     Needs an organization token with `syncProviders` for every request, and `manageProviders` as well
     when it replaces lines (replaceLines: true), which removes their earlier days.
@@ -218,8 +218,8 @@ async def asyncio_detailed(
     it again. Submitted costs count toward the organization's monthly volume, one row for each day a
     cost is spread over, and the batch is checked whole: one that would pass a monthly volume limit set
     for the organization commits nothing. Each entry becomes one daily record per day of its charge
-    period; a request may become at most 37,500 records and, counting a spread entry once per day, 48
-    MiB of entries, and is refused with 400 otherwise.
+    period; a request may become at most 7,500 records and, counting a spread entry once per day,
+    10,000,000 bytes of entries, and is refused with 400 otherwise.
 
     Needs an organization token with `syncProviders` for every request, and `manageProviders` as well
     when it replaces lines (replaceLines: true), which removes their earlier days.
@@ -262,8 +262,8 @@ async def asyncio(
     it again. Submitted costs count toward the organization's monthly volume, one row for each day a
     cost is spread over, and the batch is checked whole: one that would pass a monthly volume limit set
     for the organization commits nothing. Each entry becomes one daily record per day of its charge
-    period; a request may become at most 37,500 records and, counting a spread entry once per day, 48
-    MiB of entries, and is refused with 400 otherwise.
+    period; a request may become at most 7,500 records and, counting a spread entry once per day,
+    10,000,000 bytes of entries, and is refused with 400 otherwise.
 
     Needs an organization token with `syncProviders` for every request, and `manageProviders` as well
     when it replaces lines (replaceLines: true), which removes their earlier days.

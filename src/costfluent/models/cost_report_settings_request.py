@@ -32,6 +32,7 @@ class CostReportSettingsRequest:
         unit_cost_label_filter (list[UnitCostLabelConditionRequest] | None | Unset):
         unit_cost_calculation (None | str | Unset):
         unit_cost_scale (int | None | Unset):
+        comparison_mode (None | str | Unset):
     """
 
     include_credits: bool | None | Unset = UNSET
@@ -47,6 +48,7 @@ class CostReportSettingsRequest:
     unit_cost_label_filter: list[UnitCostLabelConditionRequest] | None | Unset = UNSET
     unit_cost_calculation: None | str | Unset = UNSET
     unit_cost_scale: int | None | Unset = UNSET
+    comparison_mode: None | str | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         include_credits: bool | None | Unset
@@ -139,6 +141,12 @@ class CostReportSettingsRequest:
         else:
             unit_cost_scale = self.unit_cost_scale
 
+        comparison_mode: None | str | Unset
+        if isinstance(self.comparison_mode, Unset):
+            comparison_mode = UNSET
+        else:
+            comparison_mode = self.comparison_mode
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update({})
@@ -168,6 +176,8 @@ class CostReportSettingsRequest:
             field_dict["unitCostCalculation"] = unit_cost_calculation
         if unit_cost_scale is not UNSET:
             field_dict["unitCostScale"] = unit_cost_scale
+        if comparison_mode is not UNSET:
+            field_dict["comparisonMode"] = comparison_mode
 
         return field_dict
 
@@ -347,6 +357,15 @@ class CostReportSettingsRequest:
 
         unit_cost_scale = _parse_unit_cost_scale(d.pop("unitCostScale", UNSET))
 
+        def _parse_comparison_mode(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        comparison_mode = _parse_comparison_mode(d.pop("comparisonMode", UNSET))
+
         cost_report_settings_request = cls(
             include_credits=include_credits,
             include_refunds=include_refunds,
@@ -361,6 +380,7 @@ class CostReportSettingsRequest:
             unit_cost_label_filter=unit_cost_label_filter,
             unit_cost_calculation=unit_cost_calculation,
             unit_cost_scale=unit_cost_scale,
+            comparison_mode=comparison_mode,
         )
 
         return cost_report_settings_request

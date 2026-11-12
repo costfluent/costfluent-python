@@ -90,7 +90,9 @@ def sync_detailed(
 ) -> Response[ApiError | CustomCostUploadResponse]:
     """Get upload
 
-     Returns one upload with its status and, when it failed, the first errors of its report.
+     Returns one upload with its status and, when it failed, the first errors of its report. billedTotals
+    is null unless the token has manageProviders, or viewCosts in workspaces that together read the
+    whole connection.
 
     Needs an organization token with `viewProviders`.
 
@@ -126,7 +128,9 @@ def sync(
 ) -> ApiError | CustomCostUploadResponse | None:
     """Get upload
 
-     Returns one upload with its status and, when it failed, the first errors of its report.
+     Returns one upload with its status and, when it failed, the first errors of its report. billedTotals
+    is null unless the token has manageProviders, or viewCosts in workspaces that together read the
+    whole connection.
 
     Needs an organization token with `viewProviders`.
 
@@ -157,7 +161,9 @@ async def asyncio_detailed(
 ) -> Response[ApiError | CustomCostUploadResponse]:
     """Get upload
 
-     Returns one upload with its status and, when it failed, the first errors of its report.
+     Returns one upload with its status and, when it failed, the first errors of its report. billedTotals
+    is null unless the token has manageProviders, or viewCosts in workspaces that together read the
+    whole connection.
 
     Needs an organization token with `viewProviders`.
 
@@ -191,7 +197,9 @@ async def asyncio(
 ) -> ApiError | CustomCostUploadResponse | None:
     """Get upload
 
-     Returns one upload with its status and, when it failed, the first errors of its report.
+     Returns one upload with its status and, when it failed, the first errors of its report. billedTotals
+    is null unless the token has manageProviders, or viewCosts in workspaces that together read the
+    whole connection.
 
     Needs an organization token with `viewProviders`.
 

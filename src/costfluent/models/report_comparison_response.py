@@ -20,11 +20,13 @@ class ReportComparisonResponse:
         start_date (datetime.date):
         end_date (datetime.date):
         series (list[ReportComparisonPointResponse]):
+        same_period_last_year (bool):
     """
 
     start_date: datetime.date
     end_date: datetime.date
     series: list[ReportComparisonPointResponse]
+    same_period_last_year: bool
 
     def to_dict(self) -> dict[str, Any]:
         start_date = self.start_date.isoformat()
@@ -36,6 +38,8 @@ class ReportComparisonResponse:
             series_item = series_item_data.to_dict()
             series.append(series_item)
 
+        same_period_last_year = self.same_period_last_year
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update(
@@ -43,6 +47,7 @@ class ReportComparisonResponse:
                 "startDate": start_date,
                 "endDate": end_date,
                 "series": series,
+                "samePeriodLastYear": same_period_last_year,
             }
         )
 
@@ -66,10 +71,13 @@ class ReportComparisonResponse:
 
             series.append(series_item)
 
+        same_period_last_year = d.pop("samePeriodLastYear")
+
         report_comparison_response = cls(
             start_date=start_date,
             end_date=end_date,
             series=series,
+            same_period_last_year=same_period_last_year,
         )
 
         return report_comparison_response

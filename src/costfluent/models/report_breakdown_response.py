@@ -23,6 +23,7 @@ class ReportBreakdownResponse:
         previous_cost (None | str | Unset):
         compared_cost (None | str | Unset):
         change_percent (float | None | Unset):
+        unit_price (float | None | Unset):
     """
 
     keys: list[str]
@@ -34,6 +35,7 @@ class ReportBreakdownResponse:
     previous_cost: None | str | Unset = UNSET
     compared_cost: None | str | Unset = UNSET
     change_percent: float | None | Unset = UNSET
+    unit_price: float | None | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         keys = self.keys
@@ -74,6 +76,12 @@ class ReportBreakdownResponse:
         else:
             change_percent = self.change_percent
 
+        unit_price: float | None | Unset
+        if isinstance(self.unit_price, Unset):
+            unit_price = UNSET
+        else:
+            unit_price = self.unit_price
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update(
@@ -94,6 +102,8 @@ class ReportBreakdownResponse:
             field_dict["comparedCost"] = compared_cost
         if change_percent is not UNSET:
             field_dict["changePercent"] = change_percent
+        if unit_price is not UNSET:
+            field_dict["unitPrice"] = unit_price
 
         return field_dict
 
@@ -153,6 +163,15 @@ class ReportBreakdownResponse:
 
         change_percent = _parse_change_percent(d.pop("changePercent", UNSET))
 
+        def _parse_unit_price(data: object) -> float | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(float | None | Unset, data)
+
+        unit_price = _parse_unit_price(d.pop("unitPrice", UNSET))
+
         report_breakdown_response = cls(
             keys=keys,
             is_other=is_other,
@@ -163,6 +182,7 @@ class ReportBreakdownResponse:
             previous_cost=previous_cost,
             compared_cost=compared_cost,
             change_percent=change_percent,
+            unit_price=unit_price,
         )
 
         return report_breakdown_response

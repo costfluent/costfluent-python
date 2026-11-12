@@ -1,6 +1,6 @@
 """Generated from the Public API document. Do not edit."""
 
-CONTRACT_SHA256 = "718888ffd87ce0bd86537d3f9531fe9fbce07ac71e7be92351fecf39ce09052c"
+CONTRACT_SHA256 = "78774c3a37c4ed7d47d11228739499911c748b7523d95514b8694f6402bd7f79"
 """SHA-256 of the Public API document this package was generated from."""
 
 IDEMPOTENT_CREATES: tuple[str, ...] = (

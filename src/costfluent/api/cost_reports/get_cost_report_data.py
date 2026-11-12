@@ -110,7 +110,8 @@ def sync_detailed(
      Returns the computed cost data for a report. A breakdown row's `percent` is its share of the
     window's total cost; with conversion off over several currencies, of the total in its own currency.
 
-    Needs a token with `viewCosts` on the workspace.
+    Needs a token with `viewCosts` on the workspace for every report, and `viewCostReports` too for a
+    report that charts a business metric.
 
     Args:
         cost_report_id (str):
@@ -147,7 +148,8 @@ def sync(
      Returns the computed cost data for a report. A breakdown row's `percent` is its share of the
     window's total cost; with conversion off over several currencies, of the total in its own currency.
 
-    Needs a token with `viewCosts` on the workspace.
+    Needs a token with `viewCosts` on the workspace for every report, and `viewCostReports` too for a
+    report that charts a business metric.
 
     Args:
         cost_report_id (str):
@@ -179,7 +181,8 @@ async def asyncio_detailed(
      Returns the computed cost data for a report. A breakdown row's `percent` is its share of the
     window's total cost; with conversion off over several currencies, of the total in its own currency.
 
-    Needs a token with `viewCosts` on the workspace.
+    Needs a token with `viewCosts` on the workspace for every report, and `viewCostReports` too for a
+    report that charts a business metric.
 
     Args:
         cost_report_id (str):
@@ -214,7 +217,8 @@ async def asyncio(
      Returns the computed cost data for a report. A breakdown row's `percent` is its share of the
     window's total cost; with conversion off over several currencies, of the total in its own currency.
 
-    Needs a token with `viewCosts` on the workspace.
+    Needs a token with `viewCosts` on the workspace for every report, and `viewCostReports` too for a
+    report that charts a business metric.
 
     Args:
         cost_report_id (str):

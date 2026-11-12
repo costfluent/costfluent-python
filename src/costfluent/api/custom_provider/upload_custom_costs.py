@@ -124,7 +124,10 @@ def sync_detailed(
     from its first charge to its last. Its rows count toward the organization's monthly volume, one row
     for each day a cost is spread over, and the upload is checked whole before any day is committed: one
     that would pass a monthly volume limit set for the organization, or is processed while ingestion is
-    paused, fails and commits nothing.
+    paused, fails and commits nothing. An organization has at most 5 uploads waiting or being processed
+    at once, one deleted before it finished counting for 5 minutes after the delete; a further upload,
+    or one sent once its custom connections have committed the day's cost records or bytes, is refused
+    with 429 and nothing is stored.
 
     Needs an organization token with `manageProviders`.
 
@@ -167,7 +170,10 @@ def sync(
     from its first charge to its last. Its rows count toward the organization's monthly volume, one row
     for each day a cost is spread over, and the upload is checked whole before any day is committed: one
     that would pass a monthly volume limit set for the organization, or is processed while ingestion is
-    paused, fails and commits nothing.
+    paused, fails and commits nothing. An organization has at most 5 uploads waiting or being processed
+    at once, one deleted before it finished counting for 5 minutes after the delete; a further upload,
+    or one sent once its custom connections have committed the day's cost records or bytes, is refused
+    with 429 and nothing is stored.
 
     Needs an organization token with `manageProviders`.
 
@@ -205,7 +211,10 @@ async def asyncio_detailed(
     from its first charge to its last. Its rows count toward the organization's monthly volume, one row
     for each day a cost is spread over, and the upload is checked whole before any day is committed: one
     that would pass a monthly volume limit set for the organization, or is processed while ingestion is
-    paused, fails and commits nothing.
+    paused, fails and commits nothing. An organization has at most 5 uploads waiting or being processed
+    at once, one deleted before it finished counting for 5 minutes after the delete; a further upload,
+    or one sent once its custom connections have committed the day's cost records or bytes, is refused
+    with 429 and nothing is stored.
 
     Needs an organization token with `manageProviders`.
 
@@ -246,7 +255,10 @@ async def asyncio(
     from its first charge to its last. Its rows count toward the organization's monthly volume, one row
     for each day a cost is spread over, and the upload is checked whole before any day is committed: one
     that would pass a monthly volume limit set for the organization, or is processed while ingestion is
-    paused, fails and commits nothing.
+    paused, fails and commits nothing. An organization has at most 5 uploads waiting or being processed
+    at once, one deleted before it finished counting for 5 minutes after the delete; a further upload,
+    or one sent once its custom connections have committed the day's cost records or bytes, is refused
+    with 429 and nothing is stored.
 
     Needs an organization token with `manageProviders`.
 

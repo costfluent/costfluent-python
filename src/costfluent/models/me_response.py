@@ -18,6 +18,7 @@ class MeResponse:
         token_type (str):
         token_name (str):
         capabilities (list[str]):
+        agent_writes_allowed (bool):
         workspace_id (None | str | Unset):
         default_workspace_id (None | str | Unset):
         cluster_id (None | str | Unset):
@@ -27,6 +28,7 @@ class MeResponse:
     token_type: str
     token_name: str
     capabilities: list[str]
+    agent_writes_allowed: bool
     workspace_id: None | str | Unset = UNSET
     default_workspace_id: None | str | Unset = UNSET
     cluster_id: None | str | Unset = UNSET
@@ -39,6 +41,8 @@ class MeResponse:
         token_name = self.token_name
 
         capabilities = self.capabilities
+
+        agent_writes_allowed = self.agent_writes_allowed
 
         workspace_id: None | str | Unset
         if isinstance(self.workspace_id, Unset):
@@ -66,6 +70,7 @@ class MeResponse:
                 "tokenType": token_type,
                 "tokenName": token_name,
                 "capabilities": capabilities,
+                "agentWritesAllowed": agent_writes_allowed,
             }
         )
         if workspace_id is not UNSET:
@@ -87,6 +92,8 @@ class MeResponse:
         token_name = d.pop("tokenName")
 
         capabilities = cast(list[str], d.pop("capabilities"))
+
+        agent_writes_allowed = d.pop("agentWritesAllowed")
 
         def _parse_workspace_id(data: object) -> None | str | Unset:
             if data is None:
@@ -122,6 +129,7 @@ class MeResponse:
             token_type=token_type,
             token_name=token_name,
             capabilities=capabilities,
+            agent_writes_allowed=agent_writes_allowed,
             workspace_id=workspace_id,
             default_workspace_id=default_workspace_id,
             cluster_id=cluster_id,

@@ -37,7 +37,10 @@ class Client:
     raise_on_unexpected_status: bool = field(default=False, kw_only=True)
     _base_url: str = field(alias="base_url")
     _cookies: dict[str, str] = field(factory=dict, kw_only=True, alias="cookies")
-    _headers: dict[str, str] = field(factory=dict, kw_only=True, alias="headers")
+    # Out of the repr: it can hold the bearer token, which a printed client would otherwise show.
+    _headers: dict[str, str] = field(
+        factory=dict, kw_only=True, alias="headers", repr=False
+    )
     _timeout: httpx.Timeout | None = field(default=None, kw_only=True, alias="timeout")
     _verify_ssl: str | bool | ssl.SSLContext = field(
         default=True, kw_only=True, alias="verify_ssl"
@@ -171,7 +174,10 @@ class AuthenticatedClient:
     raise_on_unexpected_status: bool = field(default=False, kw_only=True)
     _base_url: str = field(alias="base_url")
     _cookies: dict[str, str] = field(factory=dict, kw_only=True, alias="cookies")
-    _headers: dict[str, str] = field(factory=dict, kw_only=True, alias="headers")
+    # Out of the repr: it can hold the bearer token, which a printed client would otherwise show.
+    _headers: dict[str, str] = field(
+        factory=dict, kw_only=True, alias="headers", repr=False
+    )
     _timeout: httpx.Timeout | None = field(default=None, kw_only=True, alias="timeout")
     _verify_ssl: str | bool | ssl.SSLContext = field(
         default=True, kw_only=True, alias="verify_ssl"
@@ -183,7 +189,8 @@ class AuthenticatedClient:
     _client: httpx.Client | None = field(default=None, init=False)
     _async_client: httpx.AsyncClient | None = field(default=None, init=False)
 
-    token: str
+    # Out of the repr, so a printed client never shows the bearer token.
+    token: str = field(repr=False)
     prefix: str = "Bearer"
     auth_header_name: str = "Authorization"
 

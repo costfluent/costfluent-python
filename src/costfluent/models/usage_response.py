@@ -21,7 +21,6 @@ class UsageResponse:
     Attributes:
         period_start (datetime.date):
         currency (str):
-        tracked_spend (str):
         is_spend_complete (bool):
         unconverted_currencies (list[str]):
         rows_ingested (int):
@@ -29,6 +28,7 @@ class UsageResponse:
         connection_count (int):
         active_user_count (int):
         history (list[UsageHistoryEntryResponse]):
+        tracked_spend (None | str):
         computed_at (datetime.datetime | None | Unset):
         average_tracked_spend (None | str | Unset):
         band_plan_code (None | str | Unset):
@@ -36,7 +36,6 @@ class UsageResponse:
 
     period_start: datetime.date
     currency: str
-    tracked_spend: str
     is_spend_complete: bool
     unconverted_currencies: list[str]
     rows_ingested: int
@@ -44,6 +43,7 @@ class UsageResponse:
     connection_count: int
     active_user_count: int
     history: list[UsageHistoryEntryResponse]
+    tracked_spend: None | str
     computed_at: datetime.datetime | None | Unset = UNSET
     average_tracked_spend: None | str | Unset = UNSET
     band_plan_code: None | str | Unset = UNSET
@@ -52,8 +52,6 @@ class UsageResponse:
         period_start = self.period_start.isoformat()
 
         currency = self.currency
-
-        tracked_spend = self.tracked_spend
 
         is_spend_complete = self.is_spend_complete
 
@@ -71,6 +69,9 @@ class UsageResponse:
         for history_item_data in self.history:
             history_item = history_item_data.to_dict()
             history.append(history_item)
+
+        tracked_spend: None | str
+        tracked_spend = self.tracked_spend
 
         computed_at: None | str | Unset
         if isinstance(self.computed_at, Unset):
@@ -98,7 +99,6 @@ class UsageResponse:
             {
                 "periodStart": period_start,
                 "currency": currency,
-                "trackedSpend": tracked_spend,
                 "isSpendComplete": is_spend_complete,
                 "unconvertedCurrencies": unconverted_currencies,
                 "rowsIngested": rows_ingested,
@@ -106,6 +106,7 @@ class UsageResponse:
                 "connectionCount": connection_count,
                 "activeUserCount": active_user_count,
                 "history": history,
+                "trackedSpend": tracked_spend,
             }
         )
         if computed_at is not UNSET:
@@ -126,8 +127,6 @@ class UsageResponse:
 
         currency = d.pop("currency")
 
-        tracked_spend = d.pop("trackedSpend")
-
         is_spend_complete = d.pop("isSpendComplete")
 
         unconverted_currencies = cast(list[str], d.pop("unconvertedCurrencies"))
@@ -146,6 +145,13 @@ class UsageResponse:
             history_item = UsageHistoryEntryResponse.from_dict(history_item_data)
 
             history.append(history_item)
+
+        def _parse_tracked_spend(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        tracked_spend = _parse_tracked_spend(d.pop("trackedSpend"))
 
         def _parse_computed_at(data: object) -> datetime.datetime | None | Unset:
             if data is None:
@@ -187,7 +193,6 @@ class UsageResponse:
         usage_response = cls(
             period_start=period_start,
             currency=currency,
-            tracked_spend=tracked_spend,
             is_spend_complete=is_spend_complete,
             unconverted_currencies=unconverted_currencies,
             rows_ingested=rows_ingested,
@@ -195,6 +200,7 @@ class UsageResponse:
             connection_count=connection_count,
             active_user_count=active_user_count,
             history=history,
+            tracked_spend=tracked_spend,
             computed_at=computed_at,
             average_tracked_spend=average_tracked_spend,
             band_plan_code=band_plan_code,

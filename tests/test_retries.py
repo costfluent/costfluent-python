@@ -1,12 +1,17 @@
 import asyncio
 import datetime
 import unittest
+from collections.abc import Callable, Coroutine
+from typing import Any
 from unittest import mock
 
 import httpx
 
 from costfluent import CostfluentError, _sdk
-from costfluent.api.folders import create_folder, get_folder
+from costfluent.api.folders import create_folder, delete_folder, get_folder, update_folder
+from costfluent.api.teams import remove_team_member
+from costfluent.client import AuthenticatedClient
+from costfluent.models.update_folder_request import UpdateFolderRequest
 
 from .fake_api import FakeApi, json_response, problem
 from .test_client import FOLDER, new_folder
@@ -14,7 +19,24 @@ from .test_client import FOLDER, new_folder
 FOLDER_READ = json_response(200, {"id": "fld_1", "title": "Finance", "reportCount": 0})
 UNAVAILABLE = problem(503, "service_unavailable")
 RATE_LIMITED = problem(429, "rate_limited", headers={"Retry-After": "7"})
+NOT_FOUND = problem(404, "not_found")
+# The API's 404 for something other than a missing object, such as a path it does not serve.
+OPERATION_NOT_FOUND = problem(404, "operation_not_found")
+NO_CONTENT = httpx.Response(204)
 NOW = datetime.datetime(2026, 10, 19, 12, 0, tzinfo=datetime.UTC)
+FOLDER_UPDATE = UpdateFolderRequest(workspace_id="ws_1", title="Finance")
+
+# A read, an unconditional write and a delete: each is resent after a 5xx or a proxy's 404.
+API_404_CALLS: dict[str, Callable[[AuthenticatedClient], object]] = {
+    "GET": lambda client: get_folder.sync(client=client, folder_id="fld_1", workspace_id="ws_1"),
+    "PUT": lambda client: update_folder.sync(client=client, folder_id="fld_1", body=FOLDER_UPDATE),
+    "DELETE": lambda client: delete_folder.sync(client=client, folder_id="fld_1", workspace_id="ws_1"),
+}
+ASYNC_API_404_CALLS: dict[str, Callable[[AuthenticatedClient], Coroutine[Any, Any, object]]] = {
+    "GET": lambda client: get_folder.asyncio(client=client, folder_id="fld_1", workspace_id="ws_1"),
+    "PUT": lambda client: update_folder.asyncio(client=client, folder_id="fld_1", body=FOLDER_UPDATE),
+    "DELETE": lambda client: delete_folder.asyncio(client=client, folder_id="fld_1", workspace_id="ws_1"),
+}
 
 
 class RetryTests(unittest.TestCase):
@@ -25,6 +47,9 @@ class RetryTests(unittest.TestCase):
 
     def post_trigger(self, api: FakeApi) -> httpx.Response:
         return api.client().get_httpx_client().post("/v1/anomalies/anm_1/acknowledge")
+
+    def remove_member(self, api: FakeApi) -> object:
+        return remove_team_member.sync(client=api.client(), team_id="team_1", user_id="usr_1")
 
     def test_a_rate_limited_trigger_is_retried_after_the_wait_the_api_names(self) -> None:
         api = FakeApi(RATE_LIMITED, json_response(200, {}))
@@ -131,6 +156,50 @@ class RetryTests(unittest.TestCase):
             get_folder.sync(client=api.client(), folder_id="fld_1", workspace_id="ws_1")
         self.assertEqual(len(api.requests), 1)
 
+    def test_an_api_404_with_another_code_is_not_retried_and_is_not_a_missing_object(self) -> None:
+        # The API's own answer, whatever its code: resending it gets the same answer, and only
+        # not_found says the object is missing.
+        for method, call in API_404_CALLS.items():
+            with self.subTest(method):
+                api = FakeApi(OPERATION_NOT_FOUND)
+
+                with self.assertRaises(CostfluentError) as raised:
+                    call(api.client())
+
+                self.assertEqual([request.method for request in api.requests], [method])
+                self.assertEqual((raised.exception.status, raised.exception.code), (404, "operation_not_found"))
+                self.assertFalse(raised.exception.is_not_found)
+                self.assertFalse(raised.exception.retryable)
+
+    def test_a_resent_delete_that_finds_the_object_gone_raises_not_found(self) -> None:
+        for failure in (UNAVAILABLE, httpx.RemoteProtocolError("Server disconnected without sending a response.")):
+            with self.subTest(failure=type(failure).__name__):
+                api = FakeApi(failure, NOT_FOUND)
+
+                with self.assertRaises(CostfluentError) as raised:
+                    self.remove_member(api)
+
+                self.assertTrue(raised.exception.is_not_found)
+                self.assertEqual(len(api.requests), 2)
+
+    def test_a_delete_the_api_answered_not_found_is_not_retried(self) -> None:
+        api = FakeApi(NOT_FOUND, NO_CONTENT)
+
+        with self.assertRaises(CostfluentError) as raised:
+            self.remove_member(api)
+
+        self.assertTrue(raised.exception.is_not_found)
+        self.assertEqual(len(api.requests), 1)
+
+    def test_a_conditional_delete_is_not_retried(self) -> None:
+        api = FakeApi(UNAVAILABLE, NO_CONTENT)
+
+        with self.assertRaises(CostfluentError) as raised:
+            api.client().get_httpx_client().delete("/v1/folders/fld_1", headers={"If-Match": '"7"'})
+
+        self.assertEqual(raised.exception.status, 503)
+        self.assertEqual(len(api.requests), 1)
+
     def test_an_unconditional_put_and_a_delete_are_retried_on_a_server_error(self) -> None:
         for method in ("PUT", "DELETE"):
             for failure in (UNAVAILABLE, httpx.ConnectError("reset")):
@@ -207,6 +276,9 @@ class AsyncRetryTests(unittest.TestCase):
 
         return asyncio.run(post())
 
+    def remove_member(self, api: FakeApi) -> object:
+        return asyncio.run(remove_team_member.asyncio(client=api.client(), team_id="team_1", user_id="usr_1"))
+
     def test_an_async_read_is_retried_like_a_sync_one(self) -> None:
         sleep = mock.AsyncMock()
         with mock.patch.object(_sdk, "_async_sleep", sleep):
@@ -266,4 +338,47 @@ class AsyncRetryTests(unittest.TestCase):
 
         with self.assertRaises(httpx.ReadTimeout):
             self.get_folder(api)
+        self.assertEqual(len(api.requests), 1)
+
+    def test_an_async_api_404_with_another_code_is_not_retried_and_is_not_a_missing_object(self) -> None:
+        for method, call in ASYNC_API_404_CALLS.items():
+            with self.subTest(method):
+                api = FakeApi(OPERATION_NOT_FOUND)
+
+                with self.assertRaises(CostfluentError) as raised:
+                    asyncio.run(call(api.client()))
+
+                self.assertEqual([request.method for request in api.requests], [method])
+                self.assertEqual((raised.exception.status, raised.exception.code), (404, "operation_not_found"))
+                self.assertFalse(raised.exception.is_not_found)
+                self.assertFalse(raised.exception.retryable)
+
+    def test_an_async_resent_delete_that_finds_the_object_gone_raises_not_found(self) -> None:
+        for failure in (UNAVAILABLE, httpx.RemoteProtocolError("Server disconnected without sending a response.")):
+            with self.subTest(failure=type(failure).__name__):
+                api = FakeApi(failure, NOT_FOUND)
+
+                with self.assertRaises(CostfluentError) as raised:
+                    self.remove_member(api)
+
+                self.assertTrue(raised.exception.is_not_found)
+                self.assertEqual(len(api.requests), 2)
+
+    def test_an_async_delete_the_api_answered_not_found_is_not_retried(self) -> None:
+        api = FakeApi(NOT_FOUND, NO_CONTENT)
+
+        with self.assertRaises(CostfluentError) as raised:
+            self.remove_member(api)
+
+        self.assertTrue(raised.exception.is_not_found)
+        self.assertEqual(len(api.requests), 1)
+
+    def test_an_async_conditional_delete_is_not_retried(self) -> None:
+        api = FakeApi(UNAVAILABLE, NO_CONTENT)
+        client = api.client().get_async_httpx_client()
+
+        with self.assertRaises(CostfluentError) as raised:
+            asyncio.run(client.delete("/v1/folders/fld_1", headers={"If-Match": '"7"'}))
+
+        self.assertEqual(raised.exception.status, 503)
         self.assertEqual(len(api.requests), 1)

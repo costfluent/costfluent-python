@@ -12,7 +12,7 @@ from costfluent import CostfluentError, create_client, paginate
 from costfluent.api.cost_alerts import create_cost_alert
 from costfluent.api.cost_data import get_cost_data
 from costfluent.api.custom_provider import submit_costs
-from costfluent.api.folders import create_folder, get_folder, list_folders
+from costfluent.api.folders import create_folder, delete_folder, get_folder, list_folders
 from costfluent.api.providers import connect_provider
 from costfluent.api.workspaces import create_workspace, list_workspaces
 from costfluent.models.connect_provider_request import ConnectProviderRequest
@@ -89,7 +89,11 @@ class SmokeTests(unittest.TestCase):
         assert submitted is not None and hasattr(submitted, "accepted_rows")
         self.assertEqual((submitted.accepted_rows, submitted.rejected_rows), (1, 0))
 
-        costs = get_cost_data.sync(client=self.client, start_date=COST_DAY, end_date=COST_DAY)
+        # Scoped to this provider: the token reads the whole organization, whose seeded connections
+        # carry costs of their own on COST_DAY.
+        costs = get_cost_data.sync(
+            client=self.client, start_date=COST_DAY, end_date=COST_DAY, cloud_account_ids=[provider.id]
+        )
 
         assert costs is not None and hasattr(costs, "data")
         amounts = [row.cost for row in costs.data]
@@ -99,6 +103,22 @@ class SmokeTests(unittest.TestCase):
     def test_a_missing_folder_raises_the_typed_not_found_error(self) -> None:
         with self.assertRaises(CostfluentError) as raised:
             get_folder.sync("fld_AAAAAAAAAAAAAAAAAAAAAA", client=self.client, workspace_id=self.first_workspace().id)
+
+        self.assertTrue(raised.exception.is_not_found, raised.exception)
+        self.assertEqual(raised.exception.code, "not_found")
+
+    def test_a_folder_deleted_twice_raises_not_found_the_second_time(self) -> None:
+        # The answer a resent DELETE meets when its first attempt removed the object. A title of its
+        # own, because the create-once case counts the folders titled with the run's name.
+        workspace_id = self.first_workspace().id
+        created = create_folder.sync(
+            client=self.client, body=CreateFolderRequest(workspace_id=workspace_id, title=f"{self.name} delete")
+        )
+        assert created is not None and hasattr(created, "id")
+        delete_folder.sync(created.id, client=self.client, workspace_id=workspace_id)
+
+        with self.assertRaises(CostfluentError) as raised:
+            delete_folder.sync(created.id, client=self.client, workspace_id=workspace_id)
 
         self.assertTrue(raised.exception.is_not_found, raised.exception)
         self.assertEqual(raised.exception.code, "not_found")
