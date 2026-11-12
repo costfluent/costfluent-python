@@ -12,9 +12,8 @@ Every operation is a generated module under ``costfluent.api``, its models under
 """
 
 from ._contract import CONTRACT_SHA256
-from ._sdk import DEFAULT_BASE_URL, CostfluentError, apaginate, create_client, paginate
+from ._sdk import DEFAULT_BASE_URL, AuthenticatedClient, CostfluentError, apaginate, create_client, paginate
 from ._version import __version__
-from .client import AuthenticatedClient
 from .types import UNSET, Response, Unset
 
 __all__ = [

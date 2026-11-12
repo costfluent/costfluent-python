@@ -37,6 +37,7 @@ class EntitlementResponse:
         max_backfill_months (int | None | Unset):
         max_rows_per_month (int | None | Unset):
         max_bytes_stored (int | None | Unset):
+        ingestion_halt_cause (None | str | Unset):
         band_plan_code (None | str | Unset):
     """
 
@@ -58,6 +59,7 @@ class EntitlementResponse:
     max_backfill_months: int | None | Unset = UNSET
     max_rows_per_month: int | None | Unset = UNSET
     max_bytes_stored: int | None | Unset = UNSET
+    ingestion_halt_cause: None | str | Unset = UNSET
     band_plan_code: None | str | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
@@ -128,6 +130,12 @@ class EntitlementResponse:
         else:
             max_bytes_stored = self.max_bytes_stored
 
+        ingestion_halt_cause: None | str | Unset
+        if isinstance(self.ingestion_halt_cause, Unset):
+            ingestion_halt_cause = UNSET
+        else:
+            ingestion_halt_cause = self.ingestion_halt_cause
+
         band_plan_code: None | str | Unset
         if isinstance(self.band_plan_code, Unset):
             band_plan_code = UNSET
@@ -165,6 +173,8 @@ class EntitlementResponse:
             field_dict["maxRowsPerMonth"] = max_rows_per_month
         if max_bytes_stored is not UNSET:
             field_dict["maxBytesStored"] = max_bytes_stored
+        if ingestion_halt_cause is not UNSET:
+            field_dict["ingestionHaltCause"] = ingestion_halt_cause
         if band_plan_code is not UNSET:
             field_dict["bandPlanCode"] = band_plan_code
 
@@ -269,6 +279,17 @@ class EntitlementResponse:
 
         max_bytes_stored = _parse_max_bytes_stored(d.pop("maxBytesStored", UNSET))
 
+        def _parse_ingestion_halt_cause(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        ingestion_halt_cause = _parse_ingestion_halt_cause(
+            d.pop("ingestionHaltCause", UNSET)
+        )
+
         def _parse_band_plan_code(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -297,6 +318,7 @@ class EntitlementResponse:
             max_backfill_months=max_backfill_months,
             max_rows_per_month=max_rows_per_month,
             max_bytes_stored=max_bytes_stored,
+            ingestion_halt_cause=ingestion_halt_cause,
             band_plan_code=band_plan_code,
         )
 

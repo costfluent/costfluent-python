@@ -9,16 +9,18 @@ import email.utils
 import itertools
 import random
 import time
+import urllib.request
 import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable, Iterator, Mapping, Sequence
 from datetime import UTC, datetime
 from typing import Any, Protocol, Self, TypeVar
 
 import httpx
+from attrs import define
 
+from . import client as _generated
 from ._contract import IDEMPOTENT_CREATES
 from ._version import __version__
-from .client import AuthenticatedClient
 from .models.api_error import ApiError
 from .models.api_error_entry import ApiErrorEntry
 from .types import Unset
@@ -114,8 +116,9 @@ class CostfluentError(Exception):
 
     @property
     def is_not_found(self) -> bool:
-        """The API found no such object. A proxy's plain 404 says nothing about the object, so it is not one."""
-        return self.status == 404 and self.problem is not None
+        """The API found no such object: a 404 with the code ``not_found``. Another 404 the API answers is
+        its own answer but says nothing about the object, and neither does a proxy's plain 404."""
+        return self.status == 404 and self.code == "not_found"
 
     @property
     def is_rate_limited(self) -> bool:
@@ -149,7 +152,10 @@ def _is_problem(response: httpx.Response) -> bool:
 def _retryable(request: httpx.Request) -> bool:
     """Whether a request is safe to resend after a lost response or a 5xx. A POST triggers, so
     resending one the server may have run could run it twice unless it carries an Idempotency-Key,
-    and a request with If-Match the server applied would be refused by its own now stale precondition."""
+    and a request with If-Match the server applied would be refused by its own now stale precondition.
+    An unconditional DELETE is resent, and when the first attempt removed the object before its answer
+    was lost, the resend's not-found is reported as the API answered it: a success made up here would
+    also be reported for an id that never existed or that the token cannot see."""
     if "If-Match" in request.headers:
         return False
     if request.method in ("GET", "HEAD", "PUT", "DELETE"):
@@ -298,6 +304,55 @@ async def _async_record_request(request: httpx.Request) -> None:
     _record_request(request)
 
 
+def _environment_proxy(base_url: str) -> httpx.Proxy | None:
+    """The proxy HTTPS_PROXY, HTTP_PROXY or ALL_PROXY names for ``base_url``, unless NO_PROXY covers its host.
+
+    httpx reads these variables only for a client given no transport, and this client always gives it the
+    retry transport, so it reads them here: without this, a client whose network allows only proxied
+    traffic connects directly and fails. It reads the environment only, not the macOS or Windows system
+    settings httpx's ``getproxies`` falls back to: the Go client reads only these variables, and
+    ``proxy_bypass_environment`` applies NO_PROXY to a proxy the environment named, not to a system one.
+    """
+    url = httpx.URL(base_url)
+    proxies = urllib.request.getproxies_environment()
+    proxy = proxies.get(url.scheme) or proxies.get("all")
+    # The host goes with its port, so an entry naming one (gw.corp:8443) covers that port only, as in httpx.
+    host = url.host if url.port is None else f"{url.host}:{url.port}"
+    if not proxy or urllib.request.proxy_bypass_environment(host, proxies):
+        return None
+    # A proxy named without a scheme is an HTTP proxy, as httpx and curl read it.
+    return httpx.Proxy(proxy if "://" in proxy else f"http://{proxy}")
+
+
+_LOOPBACK_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+
+
+def _check_base_url(base_url: str) -> None:
+    """Refuse a base URL that would send the token in clear: the Go client's rule, which the Terraform
+    provider and the MCP server apply to the same setting."""
+    url = httpx.URL(base_url)
+    if not url.host:
+        raise ValueError(f"costfluent: base URL {base_url!r} has no host; write it as https://<host>")
+    if url.scheme == "https" or (url.scheme == "http" and url.host in _LOOPBACK_HOSTS):
+        return
+    raise ValueError(
+        f"costfluent: base URL {base_url!r} must use https, because the API key travels with every request; "
+        "plain http is allowed only for localhost, 127.0.0.1 and ::1"
+    )
+
+
+@define
+class AuthenticatedClient(_generated.AuthenticatedClient):
+    """The generated client, refusing on construction a base URL that would send the token in clear.
+
+    ``costfluent.AuthenticatedClient`` is this class, so a client built directly rather than through
+    ``create_client`` keeps the base-URL rule; a copy made by ``with_headers`` and its siblings checks again.
+    """
+
+    def __attrs_post_init__(self) -> None:
+        _check_base_url(self._base_url)
+
+
 def create_client(
     token: str,
     *,
@@ -310,8 +365,10 @@ def create_client(
     """A client for every generated operation, sync and async, sending ``token`` as a bearer token.
 
     Calls retry as described in the README, give each create an Idempotency-Key, and raise
-    ``CostfluentError`` for any error status. ``transport`` and ``async_transport`` replace httpx's
-    own, as ``httpx.MockTransport`` does in a test.
+    ``CostfluentError`` for any error status. Requests go through the proxy HTTPS_PROXY, HTTP_PROXY or
+    ALL_PROXY names unless NO_PROXY covers the base URL's host. ``transport`` and ``async_transport``
+    replace httpx's own, proxy included, as ``httpx.MockTransport`` does in a test. A ``base_url`` that
+    is neither https nor plain http to localhost, 127.0.0.1 or ::1 raises ``ValueError``.
     """
     headers = {
         "Authorization": f"Bearer {token}",
@@ -324,7 +381,9 @@ def create_client(
             base_url=base_url,
             headers=headers,
             timeout=timeout,
-            transport=_RetryTransport(transport or httpx.HTTPTransport(), max_retries),
+            transport=_RetryTransport(
+                transport or httpx.HTTPTransport(proxy=_environment_proxy(base_url)), max_retries
+            ),
             event_hooks={"request": [_add_idempotency_key, _record_request], "response": [_raise_for_status]},
         )
     )
@@ -333,7 +392,9 @@ def create_client(
             base_url=base_url,
             headers=headers,
             timeout=timeout,
-            transport=_AsyncRetryTransport(async_transport or httpx.AsyncHTTPTransport(), max_retries),
+            transport=_AsyncRetryTransport(
+                async_transport or httpx.AsyncHTTPTransport(proxy=_environment_proxy(base_url)), max_retries
+            ),
             event_hooks={
                 "request": [_async_add_idempotency_key, _async_record_request],
                 "response": [_async_raise_for_status],
@@ -397,7 +458,7 @@ def _next_url(page: _Page[Any], requested: Sequence[httpx.URL], base_url: httpx.
 
 
 def paginate(
-    operation: Callable[..., _Page[T] | ApiError | None], /, *, client: AuthenticatedClient, **kwargs: Any
+    operation: Callable[..., _Page[T] | ApiError | None], /, *, client: _generated.AuthenticatedClient, **kwargs: Any
 ) -> Iterator[T]:
     """Every item of a list, following ``links.next`` page by page.
 
@@ -421,7 +482,11 @@ def paginate(
 
 
 async def apaginate(
-    operation: Callable[..., Awaitable[_Page[T] | ApiError | None]], /, *, client: AuthenticatedClient, **kwargs: Any
+    operation: Callable[..., Awaitable[_Page[T] | ApiError | None]],
+    /,
+    *,
+    client: _generated.AuthenticatedClient,
+    **kwargs: Any,
 ) -> AsyncIterator[T]:
     """``paginate`` for a generated ``asyncio`` function."""
     requested: list[httpx.URL] = []

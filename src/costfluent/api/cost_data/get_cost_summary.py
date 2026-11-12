@@ -19,7 +19,7 @@ def _get_kwargs(
     cloud_account_ids: list[str] | None | Unset = UNSET,
     filter_: None | str | Unset = UNSET,
     include_credits: bool | Unset = False,
-    include_refunds: bool | Unset = True,
+    include_refunds: bool | Unset = False,
     include_tax: bool | Unset = True,
     amortize: bool | Unset = True,
 ) -> dict[str, Any]:
@@ -149,7 +149,7 @@ def sync_detailed(
     cloud_account_ids: list[str] | None | Unset = UNSET,
     filter_: None | str | Unset = UNSET,
     include_credits: bool | Unset = False,
-    include_refunds: bool | Unset = True,
+    include_refunds: bool | Unset = False,
     include_tax: bool | Unset = True,
     amortize: bool | Unset = True,
 ) -> Response[ApiError | CostSummaryResponse]:
@@ -167,7 +167,7 @@ def sync_detailed(
         cloud_account_ids (list[str] | None | Unset):
         filter_ (None | str | Unset):
         include_credits (bool | Unset):  Default: False.
-        include_refunds (bool | Unset):  Default: True.
+        include_refunds (bool | Unset):  Default: False.
         include_tax (bool | Unset):  Default: True.
         amortize (bool | Unset):  Default: True.
 
@@ -207,7 +207,7 @@ def sync(
     cloud_account_ids: list[str] | None | Unset = UNSET,
     filter_: None | str | Unset = UNSET,
     include_credits: bool | Unset = False,
-    include_refunds: bool | Unset = True,
+    include_refunds: bool | Unset = False,
     include_tax: bool | Unset = True,
     amortize: bool | Unset = True,
 ) -> ApiError | CostSummaryResponse | None:
@@ -225,7 +225,7 @@ def sync(
         cloud_account_ids (list[str] | None | Unset):
         filter_ (None | str | Unset):
         include_credits (bool | Unset):  Default: False.
-        include_refunds (bool | Unset):  Default: True.
+        include_refunds (bool | Unset):  Default: False.
         include_tax (bool | Unset):  Default: True.
         amortize (bool | Unset):  Default: True.
 
@@ -260,7 +260,7 @@ async def asyncio_detailed(
     cloud_account_ids: list[str] | None | Unset = UNSET,
     filter_: None | str | Unset = UNSET,
     include_credits: bool | Unset = False,
-    include_refunds: bool | Unset = True,
+    include_refunds: bool | Unset = False,
     include_tax: bool | Unset = True,
     amortize: bool | Unset = True,
 ) -> Response[ApiError | CostSummaryResponse]:
@@ -278,7 +278,7 @@ async def asyncio_detailed(
         cloud_account_ids (list[str] | None | Unset):
         filter_ (None | str | Unset):
         include_credits (bool | Unset):  Default: False.
-        include_refunds (bool | Unset):  Default: True.
+        include_refunds (bool | Unset):  Default: False.
         include_tax (bool | Unset):  Default: True.
         amortize (bool | Unset):  Default: True.
 
@@ -316,7 +316,7 @@ async def asyncio(
     cloud_account_ids: list[str] | None | Unset = UNSET,
     filter_: None | str | Unset = UNSET,
     include_credits: bool | Unset = False,
-    include_refunds: bool | Unset = True,
+    include_refunds: bool | Unset = False,
     include_tax: bool | Unset = True,
     amortize: bool | Unset = True,
 ) -> ApiError | CostSummaryResponse | None:
@@ -334,7 +334,7 @@ async def asyncio(
         cloud_account_ids (list[str] | None | Unset):
         filter_ (None | str | Unset):
         include_credits (bool | Unset):  Default: False.
-        include_refunds (bool | Unset):  Default: True.
+        include_refunds (bool | Unset):  Default: False.
         include_tax (bool | Unset):  Default: True.
         amortize (bool | Unset):  Default: True.
 

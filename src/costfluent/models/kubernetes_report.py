@@ -11,6 +11,9 @@ from ..types import UNSET, Unset
 if TYPE_CHECKING:
     from ..models.kubernetes_report_node import KubernetesReportNode
     from ..models.kubernetes_report_pod import KubernetesReportPod
+    from ..models.kubernetes_report_unscraped_nodes_type_0 import (
+        KubernetesReportUnscrapedNodesType0,
+    )
     from ..models.kubernetes_report_volume import KubernetesReportVolume
 
 
@@ -27,6 +30,7 @@ class KubernetesReport:
         agent_instance_id (str | Unset):
         window_start (datetime.datetime | Unset):
         window_end (datetime.datetime | Unset):
+        unscraped_nodes (KubernetesReportUnscrapedNodesType0 | None | Unset):
         nodes (list[KubernetesReportNode] | Unset):
         pods (list[KubernetesReportPod] | Unset):
         volumes (list[KubernetesReportVolume] | None | Unset):
@@ -38,11 +42,16 @@ class KubernetesReport:
     agent_instance_id: str | Unset = UNSET
     window_start: datetime.datetime | Unset = UNSET
     window_end: datetime.datetime | Unset = UNSET
+    unscraped_nodes: KubernetesReportUnscrapedNodesType0 | None | Unset = UNSET
     nodes: list[KubernetesReportNode] | Unset = UNSET
     pods: list[KubernetesReportPod] | Unset = UNSET
     volumes: list[KubernetesReportVolume] | None | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.kubernetes_report_unscraped_nodes_type_0 import (
+            KubernetesReportUnscrapedNodesType0,
+        )
+
         schema_version = self.schema_version
 
         cluster_id = self.cluster_id
@@ -58,6 +67,14 @@ class KubernetesReport:
         window_end: str | Unset = UNSET
         if not isinstance(self.window_end, Unset):
             window_end = self.window_end.isoformat()
+
+        unscraped_nodes: dict[str, Any] | None | Unset
+        if isinstance(self.unscraped_nodes, Unset):
+            unscraped_nodes = UNSET
+        elif isinstance(self.unscraped_nodes, KubernetesReportUnscrapedNodesType0):
+            unscraped_nodes = self.unscraped_nodes.to_dict()
+        else:
+            unscraped_nodes = self.unscraped_nodes
 
         nodes: list[dict[str, Any]] | Unset = UNSET
         if not isinstance(self.nodes, Unset):
@@ -100,6 +117,8 @@ class KubernetesReport:
             field_dict["window_start"] = window_start
         if window_end is not UNSET:
             field_dict["window_end"] = window_end
+        if unscraped_nodes is not UNSET:
+            field_dict["unscraped_nodes"] = unscraped_nodes
         if nodes is not UNSET:
             field_dict["nodes"] = nodes
         if pods is not UNSET:
@@ -113,6 +132,9 @@ class KubernetesReport:
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.kubernetes_report_node import KubernetesReportNode
         from ..models.kubernetes_report_pod import KubernetesReportPod
+        from ..models.kubernetes_report_unscraped_nodes_type_0 import (
+            KubernetesReportUnscrapedNodesType0,
+        )
         from ..models.kubernetes_report_volume import KubernetesReportVolume
 
         d = dict(src_dict)
@@ -137,6 +159,27 @@ class KubernetesReport:
             window_end = UNSET
         else:
             window_end = datetime.datetime.fromisoformat(_window_end)
+
+        def _parse_unscraped_nodes(
+            data: object,
+        ) -> KubernetesReportUnscrapedNodesType0 | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                unscraped_nodes_type_0 = KubernetesReportUnscrapedNodesType0.from_dict(
+                    data
+                )
+
+                return unscraped_nodes_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(KubernetesReportUnscrapedNodesType0 | None | Unset, data)
+
+        unscraped_nodes = _parse_unscraped_nodes(d.pop("unscraped_nodes", UNSET))
 
         _nodes = d.pop("nodes", UNSET)
         nodes: list[KubernetesReportNode] | Unset = UNSET
@@ -187,6 +230,7 @@ class KubernetesReport:
             agent_instance_id=agent_instance_id,
             window_start=window_start,
             window_end=window_end,
+            unscraped_nodes=unscraped_nodes,
             nodes=nodes,
             pods=pods,
             volumes=volumes,

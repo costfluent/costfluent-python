@@ -20,6 +20,7 @@ def _get_kwargs(
     source: None | str | Unset = UNSET,
     kind: None | str | Unset = UNSET,
     cloud_account_id: None | str | Unset = UNSET,
+    cost_estimate_id: None | str | Unset = UNSET,
     minimum_monthly_saving: None | str | Unset = UNSET,
     sort: SavingsQueueSort | Unset = SavingsQueueSort.NEWEST,
     page: int | Unset = 1,
@@ -57,6 +58,13 @@ def _get_kwargs(
     else:
         json_cloud_account_id = cloud_account_id
     params["cloudAccountId"] = json_cloud_account_id
+
+    json_cost_estimate_id: None | str | Unset
+    if isinstance(cost_estimate_id, Unset):
+        json_cost_estimate_id = UNSET
+    else:
+        json_cost_estimate_id = cost_estimate_id
+    params["costEstimateId"] = json_cost_estimate_id
 
     json_minimum_monthly_saving: None | str | Unset
     if isinstance(minimum_monthly_saving, Unset):
@@ -154,6 +162,7 @@ def sync_detailed(
     source: None | str | Unset = UNSET,
     kind: None | str | Unset = UNSET,
     cloud_account_id: None | str | Unset = UNSET,
+    cost_estimate_id: None | str | Unset = UNSET,
     minimum_monthly_saving: None | str | Unset = UNSET,
     sort: SavingsQueueSort | Unset = SavingsQueueSort.NEWEST,
     page: int | Unset = 1,
@@ -162,9 +171,11 @@ def sync_detailed(
     """List savings findings
 
      Returns the workspace's savings queue: one tab's findings, or every status without one, narrowed by
-    source, kind, the connection that generated them and a minimum monthly saving, newest first or
-    largest saving first. Costfluent's curated findings are listed only on a plan that includes them. An
-    unknown cloudAccountId matches no finding.
+    source, kind, the connection that generated them, the resources of a cost estimate and a minimum
+    monthly saving, newest first or largest saving first. Costfluent's curated findings are listed only
+    on a plan that includes them. costEstimateId lists the findings whose resource equals, ignoring
+    case, an id on one of that estimate's resources. An unknown cloudAccountId or costEstimateId, or
+    another workspace's estimate, matches no finding.
 
     Needs a token with `viewSavingsItems` on the workspace.
 
@@ -174,6 +185,7 @@ def sync_detailed(
         source (None | str | Unset):
         kind (None | str | Unset):
         cloud_account_id (None | str | Unset):
+        cost_estimate_id (None | str | Unset):
         minimum_monthly_saving (None | str | Unset):
         sort (SavingsQueueSort | Unset):  Default: SavingsQueueSort.NEWEST.
         page (int | Unset):  Default: 1.
@@ -193,6 +205,7 @@ def sync_detailed(
         source=source,
         kind=kind,
         cloud_account_id=cloud_account_id,
+        cost_estimate_id=cost_estimate_id,
         minimum_monthly_saving=minimum_monthly_saving,
         sort=sort,
         page=page,
@@ -214,6 +227,7 @@ def sync(
     source: None | str | Unset = UNSET,
     kind: None | str | Unset = UNSET,
     cloud_account_id: None | str | Unset = UNSET,
+    cost_estimate_id: None | str | Unset = UNSET,
     minimum_monthly_saving: None | str | Unset = UNSET,
     sort: SavingsQueueSort | Unset = SavingsQueueSort.NEWEST,
     page: int | Unset = 1,
@@ -222,9 +236,11 @@ def sync(
     """List savings findings
 
      Returns the workspace's savings queue: one tab's findings, or every status without one, narrowed by
-    source, kind, the connection that generated them and a minimum monthly saving, newest first or
-    largest saving first. Costfluent's curated findings are listed only on a plan that includes them. An
-    unknown cloudAccountId matches no finding.
+    source, kind, the connection that generated them, the resources of a cost estimate and a minimum
+    monthly saving, newest first or largest saving first. Costfluent's curated findings are listed only
+    on a plan that includes them. costEstimateId lists the findings whose resource equals, ignoring
+    case, an id on one of that estimate's resources. An unknown cloudAccountId or costEstimateId, or
+    another workspace's estimate, matches no finding.
 
     Needs a token with `viewSavingsItems` on the workspace.
 
@@ -234,6 +250,7 @@ def sync(
         source (None | str | Unset):
         kind (None | str | Unset):
         cloud_account_id (None | str | Unset):
+        cost_estimate_id (None | str | Unset):
         minimum_monthly_saving (None | str | Unset):
         sort (SavingsQueueSort | Unset):  Default: SavingsQueueSort.NEWEST.
         page (int | Unset):  Default: 1.
@@ -254,6 +271,7 @@ def sync(
         source=source,
         kind=kind,
         cloud_account_id=cloud_account_id,
+        cost_estimate_id=cost_estimate_id,
         minimum_monthly_saving=minimum_monthly_saving,
         sort=sort,
         page=page,
@@ -269,6 +287,7 @@ async def asyncio_detailed(
     source: None | str | Unset = UNSET,
     kind: None | str | Unset = UNSET,
     cloud_account_id: None | str | Unset = UNSET,
+    cost_estimate_id: None | str | Unset = UNSET,
     minimum_monthly_saving: None | str | Unset = UNSET,
     sort: SavingsQueueSort | Unset = SavingsQueueSort.NEWEST,
     page: int | Unset = 1,
@@ -277,9 +296,11 @@ async def asyncio_detailed(
     """List savings findings
 
      Returns the workspace's savings queue: one tab's findings, or every status without one, narrowed by
-    source, kind, the connection that generated them and a minimum monthly saving, newest first or
-    largest saving first. Costfluent's curated findings are listed only on a plan that includes them. An
-    unknown cloudAccountId matches no finding.
+    source, kind, the connection that generated them, the resources of a cost estimate and a minimum
+    monthly saving, newest first or largest saving first. Costfluent's curated findings are listed only
+    on a plan that includes them. costEstimateId lists the findings whose resource equals, ignoring
+    case, an id on one of that estimate's resources. An unknown cloudAccountId or costEstimateId, or
+    another workspace's estimate, matches no finding.
 
     Needs a token with `viewSavingsItems` on the workspace.
 
@@ -289,6 +310,7 @@ async def asyncio_detailed(
         source (None | str | Unset):
         kind (None | str | Unset):
         cloud_account_id (None | str | Unset):
+        cost_estimate_id (None | str | Unset):
         minimum_monthly_saving (None | str | Unset):
         sort (SavingsQueueSort | Unset):  Default: SavingsQueueSort.NEWEST.
         page (int | Unset):  Default: 1.
@@ -308,6 +330,7 @@ async def asyncio_detailed(
         source=source,
         kind=kind,
         cloud_account_id=cloud_account_id,
+        cost_estimate_id=cost_estimate_id,
         minimum_monthly_saving=minimum_monthly_saving,
         sort=sort,
         page=page,
@@ -327,6 +350,7 @@ async def asyncio(
     source: None | str | Unset = UNSET,
     kind: None | str | Unset = UNSET,
     cloud_account_id: None | str | Unset = UNSET,
+    cost_estimate_id: None | str | Unset = UNSET,
     minimum_monthly_saving: None | str | Unset = UNSET,
     sort: SavingsQueueSort | Unset = SavingsQueueSort.NEWEST,
     page: int | Unset = 1,
@@ -335,9 +359,11 @@ async def asyncio(
     """List savings findings
 
      Returns the workspace's savings queue: one tab's findings, or every status without one, narrowed by
-    source, kind, the connection that generated them and a minimum monthly saving, newest first or
-    largest saving first. Costfluent's curated findings are listed only on a plan that includes them. An
-    unknown cloudAccountId matches no finding.
+    source, kind, the connection that generated them, the resources of a cost estimate and a minimum
+    monthly saving, newest first or largest saving first. Costfluent's curated findings are listed only
+    on a plan that includes them. costEstimateId lists the findings whose resource equals, ignoring
+    case, an id on one of that estimate's resources. An unknown cloudAccountId or costEstimateId, or
+    another workspace's estimate, matches no finding.
 
     Needs a token with `viewSavingsItems` on the workspace.
 
@@ -347,6 +373,7 @@ async def asyncio(
         source (None | str | Unset):
         kind (None | str | Unset):
         cloud_account_id (None | str | Unset):
+        cost_estimate_id (None | str | Unset):
         minimum_monthly_saving (None | str | Unset):
         sort (SavingsQueueSort | Unset):  Default: SavingsQueueSort.NEWEST.
         page (int | Unset):  Default: 1.
@@ -368,6 +395,7 @@ async def asyncio(
             source=source,
             kind=kind,
             cloud_account_id=cloud_account_id,
+            cost_estimate_id=cost_estimate_id,
             minimum_monthly_saving=minimum_monthly_saving,
             sort=sort,
             page=page,

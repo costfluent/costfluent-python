@@ -82,7 +82,11 @@ def sync_detailed(
     """Get the account's metered usage
 
      The same numbers the caps are enforced against, so a script can check headroom rather than discover
-    a limit by being refused.
+    a limit by being refused. `trackedSpend`, `averageTrackedSpend` and each history month's
+    `trackedSpend` are null unless the token reads costs across the whole organization: an organization
+    token issued `viewCosts` by a current Owner, or one the organization owns. The counters, the
+    currency and the band stay readable to every token. A null `averageTrackedSpend` beside a non-null
+    `trackedSpend` means the average is not measured yet.
 
     Needs an organization token with `viewOrganization`.
 
@@ -110,7 +114,11 @@ def sync(
     """Get the account's metered usage
 
      The same numbers the caps are enforced against, so a script can check headroom rather than discover
-    a limit by being refused.
+    a limit by being refused. `trackedSpend`, `averageTrackedSpend` and each history month's
+    `trackedSpend` are null unless the token reads costs across the whole organization: an organization
+    token issued `viewCosts` by a current Owner, or one the organization owns. The counters, the
+    currency and the band stay readable to every token. A null `averageTrackedSpend` beside a non-null
+    `trackedSpend` means the average is not measured yet.
 
     Needs an organization token with `viewOrganization`.
 
@@ -134,7 +142,11 @@ async def asyncio_detailed(
     """Get the account's metered usage
 
      The same numbers the caps are enforced against, so a script can check headroom rather than discover
-    a limit by being refused.
+    a limit by being refused. `trackedSpend`, `averageTrackedSpend` and each history month's
+    `trackedSpend` are null unless the token reads costs across the whole organization: an organization
+    token issued `viewCosts` by a current Owner, or one the organization owns. The counters, the
+    currency and the band stay readable to every token. A null `averageTrackedSpend` beside a non-null
+    `trackedSpend` means the average is not measured yet.
 
     Needs an organization token with `viewOrganization`.
 
@@ -160,7 +172,11 @@ async def asyncio(
     """Get the account's metered usage
 
      The same numbers the caps are enforced against, so a script can check headroom rather than discover
-    a limit by being refused.
+    a limit by being refused. `trackedSpend`, `averageTrackedSpend` and each history month's
+    `trackedSpend` are null unless the token reads costs across the whole organization: an organization
+    token issued `viewCosts` by a current Owner, or one the organization owns. The counters, the
+    currency and the band stay readable to every token. A null `averageTrackedSpend` beside a non-null
+    `trackedSpend` means the average is not measured yet.
 
     Needs an organization token with `viewOrganization`.
 

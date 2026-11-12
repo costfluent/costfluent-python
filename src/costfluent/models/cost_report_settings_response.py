@@ -31,6 +31,7 @@ class CostReportSettingsResponse:
         unit_cost_label_filter (list[UnitCostLabelConditionResponse]):
         unit_cost_calculation (str):
         unit_cost_scale (int):
+        comparison_mode (str):
         comparison_start_date (datetime.date | None | Unset):
         comparison_end_date (datetime.date | None | Unset):
         unit_cost_metric_id (None | str | Unset):
@@ -46,6 +47,7 @@ class CostReportSettingsResponse:
     unit_cost_label_filter: list[UnitCostLabelConditionResponse]
     unit_cost_calculation: str
     unit_cost_scale: int
+    comparison_mode: str
     comparison_start_date: datetime.date | None | Unset = UNSET
     comparison_end_date: datetime.date | None | Unset = UNSET
     unit_cost_metric_id: None | str | Unset = UNSET
@@ -73,6 +75,8 @@ class CostReportSettingsResponse:
         unit_cost_calculation = self.unit_cost_calculation
 
         unit_cost_scale = self.unit_cost_scale
+
+        comparison_mode = self.comparison_mode
 
         comparison_start_date: None | str | Unset
         if isinstance(self.comparison_start_date, Unset):
@@ -110,6 +114,7 @@ class CostReportSettingsResponse:
                 "unitCostLabelFilter": unit_cost_label_filter,
                 "unitCostCalculation": unit_cost_calculation,
                 "unitCostScale": unit_cost_scale,
+                "comparisonMode": comparison_mode,
             }
         )
         if comparison_start_date is not UNSET:
@@ -154,6 +159,8 @@ class CostReportSettingsResponse:
         unit_cost_calculation = d.pop("unitCostCalculation")
 
         unit_cost_scale = d.pop("unitCostScale")
+
+        comparison_mode = d.pop("comparisonMode")
 
         def _parse_comparison_start_date(data: object) -> datetime.date | None | Unset:
             if data is None:
@@ -215,6 +222,7 @@ class CostReportSettingsResponse:
             unit_cost_label_filter=unit_cost_label_filter,
             unit_cost_calculation=unit_cost_calculation,
             unit_cost_scale=unit_cost_scale,
+            comparison_mode=comparison_mode,
             comparison_start_date=comparison_start_date,
             comparison_end_date=comparison_end_date,
             unit_cost_metric_id=unit_cost_metric_id,

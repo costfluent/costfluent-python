@@ -28,7 +28,10 @@ Each operation is a module under `costfluent.api.<tag>` named after the operatio
 functions: `sync` returns the parsed model, `sync_detailed` the status, headers and model, and
 `asyncio` and `asyncio_detailed` are their async twins. Request and response models are under
 `costfluent.models`. `create_client` takes `base_url`, `timeout` (seconds, per request) and
-`max_retries`.
+`max_retries`. The token travels with every request, so `base_url` must use `https://`; plain
+`http://` is accepted only for `localhost`, `127.0.0.1` and `::1`, and any other raises
+`ValueError`. Calls go through the proxy `HTTPS_PROXY` or `ALL_PROXY` names (`HTTP_PROXY` for an
+`http://` base URL), and straight to a host `NO_PROXY` covers.
 
 ```python
 from costfluent.api.folders import create_folder
@@ -59,6 +62,11 @@ Any error status raises `CostfluentError` once retries are spent. It carries `st
 - A 5xx, a connection error, or a 404 that is not the API's own problem details (a proxy's) is
   retried for GET, HEAD, PUT, DELETE and creates, but not for other POSTs, which trigger work, nor
   for a request with `If-Match`.
+- A DELETE without `If-Match` is resent too: when its first attempt removed the object and only the
+  answer was lost, the resend answers not found. After a delete, `is_not_found` means no such
+  object is visible to the token: it was removed, by an earlier attempt or anyone else, or the id
+  is wrong or out of the token's reach. Treat it as done only when the id came from this token's
+  own read.
 - Retries back off exponentially from one second with jitter, at most three times. A wait over 60
   seconds is not waited out: the error is raised at once. A timeout is not retried.
 

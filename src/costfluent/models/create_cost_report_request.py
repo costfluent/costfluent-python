@@ -30,7 +30,7 @@ class CreateCostReportRequest:
         date_interval (None | str | Unset):
         start_date (datetime.date | None | Unset):
         end_date (datetime.date | None | Unset):
-        chart_type (ChartType | Unset):
+        chart_type (ChartType | Unset):  Default: ChartType.STACKEDBAR.
         chart_axis (ChartAxis | None | Unset):
         date_bin (None | str | Unset):
         settings (CostReportSettingsRequest | None | Unset):
@@ -44,7 +44,7 @@ class CreateCostReportRequest:
     date_interval: None | str | Unset = UNSET
     start_date: datetime.date | None | Unset = UNSET
     end_date: datetime.date | None | Unset = UNSET
-    chart_type: ChartType | Unset = UNSET
+    chart_type: ChartType | Unset = ChartType.STACKEDBAR
     chart_axis: ChartAxis | None | Unset = UNSET
     date_bin: None | str | Unset = UNSET
     settings: CostReportSettingsRequest | None | Unset = UNSET
