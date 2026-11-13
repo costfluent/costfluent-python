@@ -1,5 +1,8 @@
 import asyncio
 import datetime
+import math
+import threading
+import time
 import unittest
 from collections.abc import Callable, Coroutine
 from typing import Any
@@ -7,13 +10,13 @@ from unittest import mock
 
 import httpx
 
-from costfluent import CostfluentError, _sdk
+from costfluent import CostfluentError, _sdk, create_client
 from costfluent.api.folders import create_folder, delete_folder, get_folder, update_folder
 from costfluent.api.teams import remove_team_member
 from costfluent.client import AuthenticatedClient
 from costfluent.models.update_folder_request import UpdateFolderRequest
 
-from .fake_api import FakeApi, json_response, problem
+from .fake_api import BASE_URL, TOKEN, FakeApi, json_response, problem
 from .test_client import FOLDER, new_folder
 
 FOLDER_READ = json_response(200, {"id": "fld_1", "title": "Finance", "reportCount": 0})
@@ -25,6 +28,33 @@ OPERATION_NOT_FOUND = problem(404, "operation_not_found")
 NO_CONTENT = httpx.Response(204)
 NOW = datetime.datetime(2026, 10, 19, 12, 0, tzinfo=datetime.UTC)
 FOLDER_UPDATE = UpdateFolderRequest(workspace_id="ws_1", title="Finance")
+
+
+def rate_limited(retry_after: str) -> httpx.Response:
+    return problem(429, "rate_limited", headers={"Retry-After": retry_after})
+
+
+class SlidingLog:
+    """The Public API's limiter: a sliding log that answers a refusal with the time until its oldest
+    hit leaves the window, at least a second, and records only the hits it allows. One request per
+    100 ms stands for the token's budget here, with the Retry-After scaled 1:10."""
+
+    WINDOW = 0.1
+
+    def __init__(self) -> None:
+        self.lock = threading.Lock()
+        self.hits: list[float] = []
+
+    def handle(self, request: httpx.Request) -> httpx.Response:
+        with self.lock:
+            now = time.monotonic()
+            self.hits = [hit for hit in self.hits if now - hit < self.WINDOW]
+            if self.hits:
+                seconds = max(math.ceil((self.hits[0] + self.WINDOW - now) * 10), 1)
+                return rate_limited(str(seconds))
+            self.hits.append(now)
+        return json_response(200, {"id": "fld_1", "title": "Finance", "reportCount": 0})
+
 
 # A read, an unconditional write and a delete: each is resent after a 5xx or a proxy's 404.
 API_404_CALLS: dict[str, Callable[[AuthenticatedClient], object]] = {
@@ -257,6 +287,99 @@ class RetryTests(unittest.TestCase):
         for delay, base in zip(delays, (1.0, 2.0, 4.0, 8.0, 16.0, 30.0, 30.0), strict=True):
             self.assertTrue(base <= delay <= base * 1.25, delays)
 
+    def test_nine_short_rate_limits_are_waited_out(self) -> None:
+        api = FakeApi(*[rate_limited("1")] * 9, FOLDER_READ)
+
+        get_folder.sync(client=api.client(), folder_id="fld_1", workspace_id="ws_1")
+
+        self.assertEqual(len(api.requests), 10)
+        self.assertEqual([call.args[0] for call in self.sleep.call_args_list], [1.0] * 9)
+
+    def test_readers_contending_for_the_last_slots_all_get_through(self) -> None:
+        # Ten readers race for one slot that frees every 100 ms, as Terraform's ten workers do for the
+        # token's last requests, and each waits a tenth of what it is asked.
+        log = SlidingLog()
+        client = create_client(TOKEN, base_url=BASE_URL, transport=httpx.MockTransport(log.handle))
+        client.get_httpx_client()
+        waits: dict[int, float] = {}
+
+        def scaled_sleep(delay: float) -> None:
+            waits[threading.get_ident()] = waits.get(threading.get_ident(), 0.0) + delay
+            time.sleep(delay / 10)
+
+        self.sleep.side_effect = scaled_sleep
+        failures: list[CostfluentError] = []
+
+        def read() -> None:
+            try:
+                get_folder.sync(client=client, folder_id="fld_1", workspace_id="ws_1")
+            except CostfluentError as error:
+                failures.append(error)
+
+        readers = [threading.Thread(target=read) for _ in range(10)]
+        start = time.monotonic()
+        for reader in readers:
+            reader.start()
+        for reader in readers:
+            reader.join()
+
+        self.assertEqual(failures, [], f"{len(failures)} of 10 readers failed")
+        self.assertLessEqual(max(waits.values()), 15.0, waits)
+        self.assertLess(time.monotonic() - start, 5.0)
+
+    def test_a_server_error_after_rate_limits_backs_off_from_the_first_step(self) -> None:
+        api = FakeApi(*[rate_limited("0")] * 9, UNAVAILABLE, FOLDER_READ)
+
+        get_folder.sync(client=api.client(), folder_id="fld_1", workspace_id="ws_1")
+
+        delays = [call.args[0] for call in self.sleep.call_args_list]
+        self.assertEqual(delays[:9], [0.0] * 9)
+        self.assertEqual(len(delays), 10, delays)
+        self.assertTrue(1.0 <= delays[9] <= 1.25, delays)
+
+    def test_rate_limits_are_waited_out_for_a_minute_in_all(self) -> None:
+        cases = {
+            "eight 7s waits, then the ninth answer": ([RATE_LIMITED] * 9, 9, [7.0] * 8),
+            "40s, then 30s is raised without waiting": ([rate_limited("40"), rate_limited("30")], 2, [40.0]),
+            "a zero wait counts a second": ([rate_limited("0")] * 61, 61, [0.0] * 60),
+        }
+        for name, (replies, requests, delays) in cases.items():
+            with self.subTest(name):
+                self.sleep.reset_mock()
+                api = FakeApi(*replies)
+
+                with self.assertRaises(CostfluentError) as raised:
+                    get_folder.sync(client=api.client(), folder_id="fld_1", workspace_id="ws_1")
+
+                self.assertTrue(raised.exception.is_rate_limited)
+                self.assertEqual(len(api.requests), requests)
+                self.assertEqual([call.args[0] for call in self.sleep.call_args_list], delays)
+
+    def test_a_wait_of_exactly_a_minute_is_waited(self) -> None:
+        api = FakeApi(rate_limited("60"), FOLDER_READ)
+
+        get_folder.sync(client=api.client(), folder_id="fld_1", workspace_id="ws_1")
+        self.sleep.assert_called_once_with(60.0)
+
+    def test_a_rate_limit_spends_none_of_the_server_errors_retries(self) -> None:
+        api = FakeApi(UNAVAILABLE, rate_limited("0"), UNAVAILABLE, UNAVAILABLE, UNAVAILABLE, FOLDER_READ)
+
+        with self.assertRaises(CostfluentError) as raised:
+            get_folder.sync(client=api.client(), folder_id="fld_1", workspace_id="ws_1")
+
+        self.assertEqual(raised.exception.status, 503)
+        self.assertEqual(len(api.requests), 5)
+
+    def test_max_retries_zero_sends_a_rate_limited_request_once(self) -> None:
+        api = FakeApi(rate_limited("1"), FOLDER_READ)
+
+        with self.assertRaises(CostfluentError) as raised:
+            get_folder.sync(client=api.client(max_retries=0), folder_id="fld_1", workspace_id="ws_1")
+
+        self.assertTrue(raised.exception.is_rate_limited)
+        self.assertEqual(len(api.requests), 1)
+        self.sleep.assert_not_called()
+
 
 class AsyncRetryTests(unittest.TestCase):
     # The async transport is a copy of the sync loop, so each case below pins it on its own.
@@ -323,6 +446,17 @@ class AsyncRetryTests(unittest.TestCase):
         self.assertEqual(len(api.requests), 1)
         self.sleep.assert_not_awaited()
 
+    def test_async_backoff_is_capped_at_thirty_seconds(self) -> None:
+        api = FakeApi(*[UNAVAILABLE] * 7, FOLDER_READ)
+
+        folder = self.get_folder(api, max_retries=7)
+
+        self.assertEqual(getattr(folder, "id", None), "fld_1")
+        self.assertEqual(len(api.requests), 8)
+        delays = [call.args[0] for call in self.sleep.await_args_list]
+        for delay, base in zip(delays, (1.0, 2.0, 4.0, 8.0, 16.0, 30.0, 30.0), strict=True):
+            self.assertTrue(base <= delay <= base * 1.25, delays)
+
     def test_an_async_lost_connection_is_retried_for_a_read_only(self) -> None:
         read = FakeApi(httpx.ConnectError("reset"), FOLDER_READ)
         self.get_folder(read)
@@ -381,4 +515,55 @@ class AsyncRetryTests(unittest.TestCase):
             asyncio.run(client.delete("/v1/folders/fld_1", headers={"If-Match": '"7"'}))
 
         self.assertEqual(raised.exception.status, 503)
+        self.assertEqual(len(api.requests), 1)
+
+    def test_async_nine_short_rate_limits_are_waited_out(self) -> None:
+        api = FakeApi(*[rate_limited("1")] * 9, FOLDER_READ)
+
+        self.get_folder(api)
+
+        self.assertEqual(len(api.requests), 10)
+        self.assertEqual([call.args[0] for call in self.sleep.await_args_list], [1.0] * 9)
+
+    def test_async_rate_limits_are_waited_out_for_a_minute_in_all(self) -> None:
+        api = FakeApi(*[RATE_LIMITED] * 9)
+
+        with self.assertRaises(CostfluentError) as raised:
+            self.get_folder(api)
+
+        self.assertTrue(raised.exception.is_rate_limited)
+        self.assertEqual(len(api.requests), 9)
+        self.assertEqual([call.args[0] for call in self.sleep.await_args_list], [7.0] * 8)
+
+    def test_async_server_error_after_rate_limits_backs_off_from_the_first_step(self) -> None:
+        api = FakeApi(*[rate_limited("0")] * 9, UNAVAILABLE, FOLDER_READ)
+
+        self.get_folder(api)
+
+        delays = [call.args[0] for call in self.sleep.await_args_list]
+        self.assertEqual(delays[:9], [0.0] * 9)
+        self.assertEqual(len(delays), 10, delays)
+        self.assertTrue(1.0 <= delays[9] <= 1.25, delays)
+
+    def test_async_max_retries_zero_sends_a_rate_limited_request_once(self) -> None:
+        api = FakeApi(rate_limited("1"), FOLDER_READ)
+
+        with self.assertRaises(CostfluentError):
+            self.get_folder(api, max_retries=0)
+
+        self.assertEqual(len(api.requests), 1)
+        self.sleep.assert_not_awaited()
+
+    def test_an_async_call_cancelled_during_a_rate_limit_wait_sends_nothing_more(self) -> None:
+        async def cancelled(_delay: float) -> None:
+            task = asyncio.current_task()
+            assert task is not None
+            task.cancel()
+            await asyncio.sleep(0)
+
+        self.sleep.side_effect = cancelled
+        api = FakeApi(rate_limited("60"), FOLDER_READ)
+
+        with self.assertRaises(asyncio.CancelledError):
+            self.get_folder(api)
         self.assertEqual(len(api.requests), 1)
