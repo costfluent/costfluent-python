@@ -67,8 +67,12 @@ Any error status raises `CostfluentError` once retries are spent. It carries `st
   object is visible to the token: it was removed, by an earlier attempt or anyone else, or the id
   is wrong or out of the token's reach. Treat it as done only when the id came from this token's
   own read.
-- Retries back off exponentially from one second with jitter, at most three times. A wait over 60
-  seconds is not waited out: the error is raised at once. A timeout is not retried.
+- A 429 is waited out as often as the API asks while the waits stay within 60 seconds in all, each
+  counted as at least a second; the next wait that would pass them raises the error at once, and so
+  does a single wait over 60 seconds, which means the token's hourly quota is spent.
+- Other retries back off exponentially from one second with jitter, at most three times, or
+  `max_retries`; `max_retries=0` turns every retry off, rate limits included. A timeout is not
+  retried.
 
 Every create sends a fresh `Idempotency-Key` and resends it on each retry, so a retried create is
 answered with the first response instead of creating twice. Pass `idempotency_key=` to choose the

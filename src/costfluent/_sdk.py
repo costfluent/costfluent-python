@@ -6,7 +6,6 @@ from __future__ import annotations
 import asyncio
 import contextvars
 import email.utils
-import itertools
 import random
 import time
 import urllib.request
@@ -32,8 +31,10 @@ USER_AGENT = f"costfluent-python/{__version__}"
 MAX_RETRIES = 3
 BASE_DELAY = 1.0
 MAX_DELAY = 30.0
-# The longest Retry-After a request waits out. A longer one means the token's hourly quota is spent,
-# and the 429 is raised rather than held for most of an hour.
+# The longest a call waits out rate limits in all, and the longest wait a server error asks for that is
+# waited out: one per-minute window, the longest a per-minute refusal takes to clear. A single longer
+# Retry-After means the token's hourly quota is spent, and the 429 is raised at once rather than held
+# for most of an hour.
 MAX_RETRY_WAIT = 60.0
 
 IDEMPOTENCY_KEY = "Idempotency-Key"
@@ -189,11 +190,47 @@ def _retry_after(headers: httpx.Headers, now: datetime) -> float | None:
     return max((at - now).total_seconds(), 0.0)
 
 
-def _delay(attempt: int, response: httpx.Response | None) -> float:
-    if response is not None and (after := _retry_after(response.headers, _now())) is not None:
-        return after
-    delay = min(BASE_DELAY * 2**attempt, MAX_DELAY)
+def _backoff(step: int) -> float:
+    delay = min(BASE_DELAY * 2**step, MAX_DELAY)
     return delay + random.uniform(0, delay / 4)
+
+
+class _RetryBudget:
+    """One call's retries. A 429 is resent while the waits it asks for stay within MAX_RETRY_WAIT in
+    all, whatever their count: under contention the API's limiter frees one slot at a time and answers
+    each refusal with about a second, so a count would give up while the budget refills. Each wait
+    counts at least a second, which ends a 429 that asks for none, as an intermediary's Retry-After: 0
+    does, after 61 attempts. Server and connection errors keep their count of ``max_retries``, and a
+    ``max_retries`` of 0 turns every retry off, rate limits included."""
+
+    def __init__(self, max_retries: int) -> None:
+        self._max_retries = max_retries
+        self._retries = 0
+        # The waits the API did not ask for: the backoff's exponent, so a server error after rate
+        # limits backs off from its first step.
+        self._backoffs = 0
+        self._rate_limited = 0.0
+
+    def wait(self, response: httpx.Response | None) -> float | None:
+        """The wait before resending after ``response``, or after a lost connection when it is None;
+        None when the call ends here."""
+        limited = response is not None and response.status_code == 429
+        if self._max_retries <= 0 or (not limited and self._retries >= self._max_retries):
+            return None
+        delay = None if response is None else _retry_after(response.headers, _now())
+        if delay is None:
+            delay = _backoff(self._backoffs)
+            self._backoffs += 1
+        if limited:
+            counted = max(delay, 1.0)
+            if self._rate_limited + counted > MAX_RETRY_WAIT:
+                return None
+            self._rate_limited += counted
+        else:
+            self._retries += 1
+            if delay > MAX_RETRY_WAIT:
+                return None
+        return delay
 
 
 class _RetryTransport(httpx.BaseTransport):
@@ -202,28 +239,21 @@ class _RetryTransport(httpx.BaseTransport):
         self._max_retries = max_retries
 
     def handle_request(self, request: httpx.Request) -> httpx.Response:
-        for attempt in itertools.count():
-            last = attempt >= self._max_retries
-            response: httpx.Response | None
+        budget = _RetryBudget(self._max_retries)
+        while True:
             try:
                 response = self._inner.handle_request(request)
             except httpx.TimeoutException:
                 # The timeout bounds the call, not each try: three more would quadruple it.
                 raise
             except httpx.TransportError:
-                if last or not _retryable(request):
+                if not _retryable(request) or (delay := budget.wait(None)) is None:
                     raise
-                response = None
             else:
-                if last or not _should_retry(request, response):
-                    return response
-            delay = _delay(attempt, response)
-            if response is not None:
-                if delay > MAX_RETRY_WAIT:
+                if not _should_retry(request, response) or (delay := budget.wait(response)) is None:
                     return response
                 response.close()
             _sleep(delay)
-        raise AssertionError("unreachable")
 
     def close(self) -> None:
         self._inner.close()
@@ -235,28 +265,21 @@ class _AsyncRetryTransport(httpx.AsyncBaseTransport):
         self._max_retries = max_retries
 
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
-        for attempt in itertools.count():
-            last = attempt >= self._max_retries
-            response: httpx.Response | None
+        budget = _RetryBudget(self._max_retries)
+        while True:
             try:
                 response = await self._inner.handle_async_request(request)
             except httpx.TimeoutException:
                 # The timeout bounds the call, not each try: three more would quadruple it.
                 raise
             except httpx.TransportError:
-                if last or not _retryable(request):
+                if not _retryable(request) or (delay := budget.wait(None)) is None:
                     raise
-                response = None
             else:
-                if last or not _should_retry(request, response):
-                    return response
-            delay = _delay(attempt, response)
-            if response is not None:
-                if delay > MAX_RETRY_WAIT:
+                if not _should_retry(request, response) or (delay := budget.wait(response)) is None:
                     return response
                 await response.aclose()
             await _async_sleep(delay)
-        raise AssertionError("unreachable")
 
     async def aclose(self) -> None:
         await self._inner.aclose()
