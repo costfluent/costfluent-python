@@ -120,9 +120,10 @@ def sync_detailed(
     """Preview an allocation rule
 
      Computes what the rule would move without creating it. Allocation is evaluated at query time, so
-    enabling a rule restates history immediately.
+    enabling a rule restates history immediately. It reads the workspace's committed cost, so it needs
+    `viewCosts` as a cost read does.
 
-    Needs a token with `viewCostAllocation` on the workspace.
+    Needs a token with `viewCosts` and `viewCostAllocation` on the workspace.
 
     Args:
         body (PreviewAllocationRuleRequest):
@@ -154,9 +155,10 @@ def sync(
     """Preview an allocation rule
 
      Computes what the rule would move without creating it. Allocation is evaluated at query time, so
-    enabling a rule restates history immediately.
+    enabling a rule restates history immediately. It reads the workspace's committed cost, so it needs
+    `viewCosts` as a cost read does.
 
-    Needs a token with `viewCostAllocation` on the workspace.
+    Needs a token with `viewCosts` and `viewCostAllocation` on the workspace.
 
     Args:
         body (PreviewAllocationRuleRequest):
@@ -183,9 +185,10 @@ async def asyncio_detailed(
     """Preview an allocation rule
 
      Computes what the rule would move without creating it. Allocation is evaluated at query time, so
-    enabling a rule restates history immediately.
+    enabling a rule restates history immediately. It reads the workspace's committed cost, so it needs
+    `viewCosts` as a cost read does.
 
-    Needs a token with `viewCostAllocation` on the workspace.
+    Needs a token with `viewCosts` and `viewCostAllocation` on the workspace.
 
     Args:
         body (PreviewAllocationRuleRequest):
@@ -215,9 +218,10 @@ async def asyncio(
     """Preview an allocation rule
 
      Computes what the rule would move without creating it. Allocation is evaluated at query time, so
-    enabling a rule restates history immediately.
+    enabling a rule restates history immediately. It reads the workspace's committed cost, so it needs
+    `viewCosts` as a cost read does.
 
-    Needs a token with `viewCostAllocation` on the workspace.
+    Needs a token with `viewCosts` and `viewCostAllocation` on the workspace.
 
     Args:
         body (PreviewAllocationRuleRequest):

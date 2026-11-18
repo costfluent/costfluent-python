@@ -121,10 +121,13 @@ def sync_detailed(
 ) -> Response[ApiError | AppResponse]:
     """Create app
 
-     Creates a notification channel that budgets, cost alerts and report notifications can deliver to. A
-    webhook created without a secret in its config is given one, which this answer returns once as
-    signingSecret. A channel kind the organization's plan does not include is refused with 422
-    plan_upgrade_required.
+     Creates a notification channel that budgets, cost alerts, anomalies, expiring commitments, credit
+    notices and stale connections deliver to as they are routed. Scheduled reports reach email, Slack
+    and Teams channels only, never a webhook; a webhook also receives the state changes its config's
+    events subscribe to. A webhook created without a secret in its config is given one, which this
+    answer returns once as signingSecret; a secret the client chooses must be at least 32 characters,
+    and a shorter one is refused with 400. A channel kind the organization's plan does not include is
+    refused with 422 plan_upgrade_required.
 
     Needs an organization token with `createApp`.
 
@@ -160,10 +163,13 @@ def sync(
 ) -> ApiError | AppResponse | None:
     """Create app
 
-     Creates a notification channel that budgets, cost alerts and report notifications can deliver to. A
-    webhook created without a secret in its config is given one, which this answer returns once as
-    signingSecret. A channel kind the organization's plan does not include is refused with 422
-    plan_upgrade_required.
+     Creates a notification channel that budgets, cost alerts, anomalies, expiring commitments, credit
+    notices and stale connections deliver to as they are routed. Scheduled reports reach email, Slack
+    and Teams channels only, never a webhook; a webhook also receives the state changes its config's
+    events subscribe to. A webhook created without a secret in its config is given one, which this
+    answer returns once as signingSecret; a secret the client chooses must be at least 32 characters,
+    and a shorter one is refused with 400. A channel kind the organization's plan does not include is
+    refused with 422 plan_upgrade_required.
 
     Needs an organization token with `createApp`.
 
@@ -194,10 +200,13 @@ async def asyncio_detailed(
 ) -> Response[ApiError | AppResponse]:
     """Create app
 
-     Creates a notification channel that budgets, cost alerts and report notifications can deliver to. A
-    webhook created without a secret in its config is given one, which this answer returns once as
-    signingSecret. A channel kind the organization's plan does not include is refused with 422
-    plan_upgrade_required.
+     Creates a notification channel that budgets, cost alerts, anomalies, expiring commitments, credit
+    notices and stale connections deliver to as they are routed. Scheduled reports reach email, Slack
+    and Teams channels only, never a webhook; a webhook also receives the state changes its config's
+    events subscribe to. A webhook created without a secret in its config is given one, which this
+    answer returns once as signingSecret; a secret the client chooses must be at least 32 characters,
+    and a shorter one is refused with 400. A channel kind the organization's plan does not include is
+    refused with 422 plan_upgrade_required.
 
     Needs an organization token with `createApp`.
 
@@ -231,10 +240,13 @@ async def asyncio(
 ) -> ApiError | AppResponse | None:
     """Create app
 
-     Creates a notification channel that budgets, cost alerts and report notifications can deliver to. A
-    webhook created without a secret in its config is given one, which this answer returns once as
-    signingSecret. A channel kind the organization's plan does not include is refused with 422
-    plan_upgrade_required.
+     Creates a notification channel that budgets, cost alerts, anomalies, expiring commitments, credit
+    notices and stale connections deliver to as they are routed. Scheduled reports reach email, Slack
+    and Teams channels only, never a webhook; a webhook also receives the state changes its config's
+    events subscribe to. A webhook created without a secret in its config is given one, which this
+    answer returns once as signingSecret; a secret the client chooses must be at least 32 characters,
+    and a shorter one is refused with 400. A channel kind the organization's plan does not include is
+    refused with 422 plan_upgrade_required.
 
     Needs an organization token with `createApp`.
 

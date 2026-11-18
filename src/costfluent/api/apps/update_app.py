@@ -122,9 +122,10 @@ def sync_detailed(
     """Update app
 
      Renames a notification channel or replaces its configuration. A webhook's secret left out of the new
-    configuration, or sent back as ***, keeps the stored one; null removes it. A webhook's url sent back
-    in its redacted form, its scheme and host followed by /***, keeps the stored one. The kind cannot
-    change.
+    configuration, or sent back as ***, keeps the stored one; null or an empty string removes it. A new
+    secret must be at least 32 characters, and a shorter one is refused with 400; a secret equal to the
+    stored one is kept, whatever its length. A webhook's url sent back in its redacted form, its scheme
+    and host followed by /***, keeps the stored one. The kind cannot change.
 
     Needs an organization token with `updateApp`.
 
@@ -164,9 +165,10 @@ def sync(
     """Update app
 
      Renames a notification channel or replaces its configuration. A webhook's secret left out of the new
-    configuration, or sent back as ***, keeps the stored one; null removes it. A webhook's url sent back
-    in its redacted form, its scheme and host followed by /***, keeps the stored one. The kind cannot
-    change.
+    configuration, or sent back as ***, keeps the stored one; null or an empty string removes it. A new
+    secret must be at least 32 characters, and a shorter one is refused with 400; a secret equal to the
+    stored one is kept, whatever its length. A webhook's url sent back in its redacted form, its scheme
+    and host followed by /***, keeps the stored one. The kind cannot change.
 
     Needs an organization token with `updateApp`.
 
@@ -201,9 +203,10 @@ async def asyncio_detailed(
     """Update app
 
      Renames a notification channel or replaces its configuration. A webhook's secret left out of the new
-    configuration, or sent back as ***, keeps the stored one; null removes it. A webhook's url sent back
-    in its redacted form, its scheme and host followed by /***, keeps the stored one. The kind cannot
-    change.
+    configuration, or sent back as ***, keeps the stored one; null or an empty string removes it. A new
+    secret must be at least 32 characters, and a shorter one is refused with 400; a secret equal to the
+    stored one is kept, whatever its length. A webhook's url sent back in its redacted form, its scheme
+    and host followed by /***, keeps the stored one. The kind cannot change.
 
     Needs an organization token with `updateApp`.
 
@@ -241,9 +244,10 @@ async def asyncio(
     """Update app
 
      Renames a notification channel or replaces its configuration. A webhook's secret left out of the new
-    configuration, or sent back as ***, keeps the stored one; null removes it. A webhook's url sent back
-    in its redacted form, its scheme and host followed by /***, keeps the stored one. The kind cannot
-    change.
+    configuration, or sent back as ***, keeps the stored one; null or an empty string removes it. A new
+    secret must be at least 32 characters, and a shorter one is refused with 400; a secret equal to the
+    stored one is kept, whatever its length. A webhook's url sent back in its redacted form, its scheme
+    and host followed by /***, keeps the stored one. The kind cannot change.
 
     Needs an organization token with `updateApp`.
 

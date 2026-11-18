@@ -112,6 +112,32 @@ class RetryTests(unittest.TestCase):
         self.assertEqual(len(api.requests), 1)
         self.sleep.assert_not_called()
 
+    def test_a_server_error_waits_the_retry_after_it_asks(self) -> None:
+        api = FakeApi(problem(503, "service_unavailable", headers={"Retry-After": "5"}), FOLDER_READ)
+
+        get_folder.sync(client=api.client(), folder_id="fld_1", workspace_id="ws_1")
+
+        self.assertEqual(len(api.requests), 2)
+        self.sleep.assert_called_once_with(5.0)
+
+    def test_a_server_error_asking_for_over_a_minute_raises_at_once(self) -> None:
+        api = FakeApi(problem(503, "service_unavailable", headers={"Retry-After": "3600"}), FOLDER_READ)
+
+        with self.assertRaises(CostfluentError) as raised:
+            get_folder.sync(client=api.client(), folder_id="fld_1", workspace_id="ws_1")
+
+        self.assertEqual(raised.exception.status, 503)
+        self.assertEqual(len(api.requests), 1)
+        self.sleep.assert_not_called()
+
+    def test_a_server_error_asking_for_exactly_a_minute_is_waited(self) -> None:
+        api = FakeApi(problem(503, "service_unavailable", headers={"Retry-After": "60"}), FOLDER_READ)
+
+        get_folder.sync(client=api.client(), folder_id="fld_1", workspace_id="ws_1")
+
+        self.assertEqual(len(api.requests), 2)
+        self.sleep.assert_called_once_with(60.0)
+
     def test_a_read_is_retried_on_a_server_error_with_growing_backoff(self) -> None:
         api = FakeApi(UNAVAILABLE, UNAVAILABLE, UNAVAILABLE, FOLDER_READ)
 
@@ -427,6 +453,32 @@ class AsyncRetryTests(unittest.TestCase):
         self.assertTrue(raised.exception.is_rate_limited)
         self.assertEqual(len(api.requests), 1)
         self.sleep.assert_not_awaited()
+
+    def test_async_a_server_error_waits_the_retry_after_it_asks(self) -> None:
+        api = FakeApi(problem(503, "service_unavailable", headers={"Retry-After": "5"}), FOLDER_READ)
+
+        self.get_folder(api)
+
+        self.assertEqual(len(api.requests), 2)
+        self.sleep.assert_awaited_once_with(5.0)
+
+    def test_async_a_server_error_asking_for_over_a_minute_raises_at_once(self) -> None:
+        api = FakeApi(problem(503, "service_unavailable", headers={"Retry-After": "3600"}), FOLDER_READ)
+
+        with self.assertRaises(CostfluentError) as raised:
+            self.get_folder(api)
+
+        self.assertEqual(raised.exception.status, 503)
+        self.assertEqual(len(api.requests), 1)
+        self.sleep.assert_not_awaited()
+
+    def test_async_a_server_error_asking_for_exactly_a_minute_is_waited(self) -> None:
+        api = FakeApi(problem(503, "service_unavailable", headers={"Retry-After": "60"}), FOLDER_READ)
+
+        self.get_folder(api)
+
+        self.assertEqual(len(api.requests), 2)
+        self.sleep.assert_awaited_once_with(60.0)
 
     def test_async_retries_stop_after_three_and_raise_the_last_status(self) -> None:
         api = FakeApi(UNAVAILABLE, UNAVAILABLE, UNAVAILABLE, problem(502, "bad_gateway"), FOLDER_READ)

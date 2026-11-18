@@ -7,8 +7,8 @@ models, sync and async, plus retries, idempotency keys, pagination and errors ha
 pip install costfluent
 ```
 
-It needs Python 3.11 or later and an API token, created under **Settings**, **API tokens**, on a
-plan that includes API access. Give the token only the capabilities your script needs.
+It needs Python 3.11 or later and an API token, created under **Settings**, **API tokens**, in any
+Costfluent organization. Give the token only the capabilities your script needs.
 
 ## Quick start
 

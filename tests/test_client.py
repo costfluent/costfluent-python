@@ -78,6 +78,18 @@ class RequestTests(unittest.TestCase):
         self.assertIn("Idempotency-Key", api.requests[0].headers)
         self.assertNotIn("Idempotency-Key", api.requests[1].headers)
 
+    def test_the_timeout_defaults_to_thirty_seconds_on_both_clients(self) -> None:
+        client = create_client(TOKEN)
+
+        self.assertEqual(client.get_httpx_client().timeout, httpx.Timeout(30.0))
+        self.assertEqual(client.get_async_httpx_client().timeout, httpx.Timeout(30.0))
+
+    def test_a_timeout_set_reaches_both_clients(self) -> None:
+        client = create_client(TOKEN, timeout=120)
+
+        self.assertEqual(client.get_httpx_client().timeout, httpx.Timeout(120.0))
+        self.assertEqual(client.get_async_httpx_client().timeout, httpx.Timeout(120.0))
+
 
 class BaseUrlTests(unittest.TestCase):
     """The token travels with every request, so the base URL must use https, but to this machine."""
