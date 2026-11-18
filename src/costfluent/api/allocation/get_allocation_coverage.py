@@ -117,7 +117,9 @@ def sync_detailed(
 ) -> Response[AllocationCoverageResponse | ApiError]:
     """Read allocation coverage
 
-     Needs a token with `viewCostAllocation` on the workspace.
+     Answers the cost the saved rules allocate in the window, per currency and segment.
+
+    Needs a token with `viewCostAllocation` on the workspace.
 
     Args:
         workspace_id (str):
@@ -157,7 +159,9 @@ def sync(
 ) -> AllocationCoverageResponse | ApiError | None:
     """Read allocation coverage
 
-     Needs a token with `viewCostAllocation` on the workspace.
+     Answers the cost the saved rules allocate in the window, per currency and segment.
+
+    Needs a token with `viewCostAllocation` on the workspace.
 
     Args:
         workspace_id (str):
@@ -192,7 +196,9 @@ async def asyncio_detailed(
 ) -> Response[AllocationCoverageResponse | ApiError]:
     """Read allocation coverage
 
-     Needs a token with `viewCostAllocation` on the workspace.
+     Answers the cost the saved rules allocate in the window, per currency and segment.
+
+    Needs a token with `viewCostAllocation` on the workspace.
 
     Args:
         workspace_id (str):
@@ -230,7 +236,9 @@ async def asyncio(
 ) -> AllocationCoverageResponse | ApiError | None:
     """Read allocation coverage
 
-     Needs a token with `viewCostAllocation` on the workspace.
+     Answers the cost the saved rules allocate in the window, per currency and segment.
+
+    Needs a token with `viewCostAllocation` on the workspace.
 
     Args:
         workspace_id (str):

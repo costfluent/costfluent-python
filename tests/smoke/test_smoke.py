@@ -8,6 +8,8 @@ import unittest
 import uuid
 from decimal import Decimal
 
+import httpx
+
 from costfluent import CostfluentError, create_client, paginate
 from costfluent.api.cost_alerts import create_cost_alert
 from costfluent.api.cost_data import get_cost_data
@@ -106,6 +108,27 @@ class SmokeTests(unittest.TestCase):
 
         self.assertTrue(raised.exception.is_not_found, raised.exception)
         self.assertEqual(raised.exception.code, "not_found")
+
+    def test_a_path_the_api_does_not_serve_fails_once_and_is_not_missing(self) -> None:
+        # The API's own 404, which is not resent as a proxy's bare 404 is, and which no client reads as
+        # a missing object.
+        sent: list[str] = []
+
+        class CountingTransport(httpx.HTTPTransport):
+            def handle_request(self, request: httpx.Request) -> httpx.Response:
+                sent.append(request.method)
+                return super().handle_request(request)
+
+        client = create_client(TOKEN, base_url=BASE_URL, transport=CountingTransport())
+        with self.assertRaises(CostfluentError) as raised:
+            client.get_httpx_client().get("/v1/no-such-route")
+
+        self.assertEqual(sent, ["GET"], "sent once")
+        self.assertEqual(
+            (raised.exception.status, raised.exception.code), (404, "operation_not_found"), raised.exception
+        )
+        self.assertFalse(raised.exception.is_not_found, raised.exception)
+        self.assertFalse(raised.exception.retryable, raised.exception)
 
     def test_a_folder_deleted_twice_raises_not_found_the_second_time(self) -> None:
         # The answer a resent DELETE meets when its first attempt removed the object. A title of its
