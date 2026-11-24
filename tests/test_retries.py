@@ -10,14 +10,14 @@ from unittest import mock
 
 import httpx
 
-from costfluent import CostfluentError, _sdk, create_client
+from costfluent import CostfluentError, __version__, _sdk, create_client
 from costfluent.api.folders import create_folder, delete_folder, get_folder, update_folder
 from costfluent.api.teams import remove_team_member
 from costfluent.client import AuthenticatedClient
 from costfluent.models.update_folder_request import UpdateFolderRequest
 
 from .fake_api import BASE_URL, TOKEN, FakeApi, json_response, problem
-from .test_client import FOLDER, new_folder
+from .test_client import FOLDER, NIGHTLY_RUN, new_folder
 
 FOLDER_READ = json_response(200, {"id": "fld_1", "title": "Finance", "reportCount": 0})
 UNAVAILABLE = problem(503, "service_unavailable")
@@ -32,6 +32,12 @@ FOLDER_UPDATE = UpdateFolderRequest(workspace_id="ws_1", title="Finance")
 
 def rate_limited(retry_after: str) -> httpx.Response:
     return problem(429, "rate_limited", headers={"Retry-After": retry_after})
+
+
+def lost_responses() -> tuple[httpx.TransportError, ...]:
+    """What a request lost after it reached the server raises. A ConnectError is raised only while
+    opening a connection, so the create never arrived and its key proves nothing."""
+    return (httpx.RemoteProtocolError("Server disconnected without sending a response."), httpx.ReadError("reset"))
 
 
 class SlidingLog:
@@ -171,6 +177,18 @@ class RetryTests(unittest.TestCase):
         keys = {request.headers["Idempotency-Key"] for request in api.requests}
         self.assertEqual((len(api.requests), len(keys)), (2, 1))
 
+    def test_a_create_is_resent_under_the_same_key_after_a_lost_connection(self) -> None:
+        for failure in lost_responses():
+            with self.subTest(failure=type(failure).__name__):
+                api = FakeApi(failure, FOLDER)
+
+                folder = create_folder.sync(client=api.client(), body=new_folder())
+
+                self.assertEqual(getattr(folder, "id", None), "fld_1")
+                keys = {request.headers.get("Idempotency-Key") for request in api.requests}
+                self.assertEqual((len(api.requests), len(keys)), (2, 1))
+                self.assertNotIn(None, keys)
+
     def test_a_conditional_write_is_not_retried(self) -> None:
         api = FakeApi(UNAVAILABLE)
 
@@ -281,6 +299,18 @@ class RetryTests(unittest.TestCase):
             "-5": (0.0, 0.0),
             "Mon, 19 Oct 2026 11:59:00 GMT": (0.0, 0.0),
             "soon": (1.0, 1.25),
+            # A signed whole number is seconds. Anything else that is not an HTTP date backs off, as
+            # the Go and TypeScript clients do.
+            "+5": (5.0, 5.0),
+            "1.5": (1.0, 1.25),
+            "0.5": (1.0, 1.25),
+            "2.": (1.0, 1.25),
+            "1,5": (1.0, 1.25),
+            "1 5": (1.0, 1.25),
+            "1/5": (1.0, 1.25),
+            "1.5.2026": (1.0, 1.25),
+            "Jan 1": (1.0, 1.25),
+            "Mon, 19 Foo 2026 12:00:30 GMT": (1.0, 1.25),
             # "-0000" is RFC 2822's "zone unknown", which parsedate_to_datetime returns without a tzinfo.
             "Mon, 19 Oct 2026 12:00:30 -0000": (30.0, 30.0),
         }
@@ -518,6 +548,39 @@ class AsyncRetryTests(unittest.TestCase):
         with self.assertRaises(httpx.ConnectError):
             self.post_trigger(trigger)
         self.assertEqual(len(trigger.requests), 1)
+
+    def test_an_async_create_is_retried_under_the_same_key(self) -> None:
+        api = FakeApi(UNAVAILABLE, FOLDER)
+
+        folder = asyncio.run(create_folder.asyncio(client=api.client(), body=new_folder()))
+
+        self.assertEqual(getattr(folder, "id", None), "fld_1")
+        keys = {request.headers.get("Idempotency-Key") for request in api.requests}
+        self.assertEqual(len(api.requests), 2)
+        self.assertEqual(len(keys), 1, keys)
+        self.assertRegex(str(keys.pop()), r"^[0-9a-f-]{36}$")
+        for request in api.requests:
+            self.assertEqual(request.headers.get("Authorization"), f"Bearer {TOKEN}")
+            self.assertEqual(request.headers.get("User-Agent"), f"costfluent-python/{__version__}")
+
+    def test_an_async_create_is_resent_under_the_same_key_after_a_lost_connection(self) -> None:
+        for failure in lost_responses():
+            with self.subTest(failure=type(failure).__name__):
+                api = FakeApi(failure, FOLDER)
+
+                folder = asyncio.run(create_folder.asyncio(client=api.client(), body=new_folder()))
+
+                self.assertEqual(getattr(folder, "id", None), "fld_1")
+                keys = {request.headers.get("Idempotency-Key") for request in api.requests}
+                self.assertEqual((len(api.requests), len(keys)), (2, 1))
+                self.assertNotIn(None, keys)
+
+    def test_an_async_create_sends_a_callers_key_unchanged(self) -> None:
+        api = FakeApi(UNAVAILABLE, FOLDER)
+
+        asyncio.run(create_folder.asyncio(client=api.client(), body=new_folder(), idempotency_key=NIGHTLY_RUN))
+
+        self.assertEqual([request.headers.get("Idempotency-Key") for request in api.requests], [NIGHTLY_RUN] * 2)
 
     def test_an_async_timeout_is_not_retried(self) -> None:
         api = FakeApi(httpx.ReadTimeout("slow"), FOLDER_READ)

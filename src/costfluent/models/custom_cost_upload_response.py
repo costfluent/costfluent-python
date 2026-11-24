@@ -10,6 +10,7 @@ from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.custom_cost_upload_error import CustomCostUploadError
+    from ..models.custom_cost_upload_invoice import CustomCostUploadInvoice
     from ..models.custom_cost_upload_response_billed_totals_type_0 import (
         CustomCostUploadResponseBilledTotalsType0,
     )
@@ -29,10 +30,12 @@ class CustomCostUploadResponse:
         total_rows (int):
         success_rows (int):
         error_rows (int):
+        format_ (str):
         uploaded_at (datetime.datetime):
         covered_from (datetime.date | None | Unset):
         covered_to (datetime.date | None | Unset):
         billed_totals (CustomCostUploadResponseBilledTotalsType0 | None | Unset):
+        invoice (CustomCostUploadInvoice | None | Unset):
         processed_at (datetime.datetime | None | Unset):
         errors (list[CustomCostUploadError] | None | Unset):
     """
@@ -44,14 +47,17 @@ class CustomCostUploadResponse:
     total_rows: int
     success_rows: int
     error_rows: int
+    format_: str
     uploaded_at: datetime.datetime
     covered_from: datetime.date | None | Unset = UNSET
     covered_to: datetime.date | None | Unset = UNSET
     billed_totals: CustomCostUploadResponseBilledTotalsType0 | None | Unset = UNSET
+    invoice: CustomCostUploadInvoice | None | Unset = UNSET
     processed_at: datetime.datetime | None | Unset = UNSET
     errors: list[CustomCostUploadError] | None | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.custom_cost_upload_invoice import CustomCostUploadInvoice
         from ..models.custom_cost_upload_response_billed_totals_type_0 import (
             CustomCostUploadResponseBilledTotalsType0,
         )
@@ -69,6 +75,8 @@ class CustomCostUploadResponse:
         success_rows = self.success_rows
 
         error_rows = self.error_rows
+
+        format_ = self.format_
 
         uploaded_at = self.uploaded_at.isoformat()
 
@@ -95,6 +103,14 @@ class CustomCostUploadResponse:
             billed_totals = self.billed_totals.to_dict()
         else:
             billed_totals = self.billed_totals
+
+        invoice: dict[str, Any] | None | Unset
+        if isinstance(self.invoice, Unset):
+            invoice = UNSET
+        elif isinstance(self.invoice, CustomCostUploadInvoice):
+            invoice = self.invoice.to_dict()
+        else:
+            invoice = self.invoice
 
         processed_at: None | str | Unset
         if isinstance(self.processed_at, Unset):
@@ -127,6 +143,7 @@ class CustomCostUploadResponse:
                 "totalRows": total_rows,
                 "successRows": success_rows,
                 "errorRows": error_rows,
+                "format": format_,
                 "uploadedAt": uploaded_at,
             }
         )
@@ -136,6 +153,8 @@ class CustomCostUploadResponse:
             field_dict["coveredTo"] = covered_to
         if billed_totals is not UNSET:
             field_dict["billedTotals"] = billed_totals
+        if invoice is not UNSET:
+            field_dict["invoice"] = invoice
         if processed_at is not UNSET:
             field_dict["processedAt"] = processed_at
         if errors is not UNSET:
@@ -146,6 +165,7 @@ class CustomCostUploadResponse:
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.custom_cost_upload_error import CustomCostUploadError
+        from ..models.custom_cost_upload_invoice import CustomCostUploadInvoice
         from ..models.custom_cost_upload_response_billed_totals_type_0 import (
             CustomCostUploadResponseBilledTotalsType0,
         )
@@ -164,6 +184,8 @@ class CustomCostUploadResponse:
         success_rows = d.pop("successRows")
 
         error_rows = d.pop("errorRows")
+
+        format_ = d.pop("format")
 
         uploaded_at = datetime.datetime.fromisoformat(d.pop("uploadedAt"))
 
@@ -222,6 +244,23 @@ class CustomCostUploadResponse:
 
         billed_totals = _parse_billed_totals(d.pop("billedTotals", UNSET))
 
+        def _parse_invoice(data: object) -> CustomCostUploadInvoice | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                invoice_type_0 = CustomCostUploadInvoice.from_dict(data)
+
+                return invoice_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(CustomCostUploadInvoice | None | Unset, data)
+
+        invoice = _parse_invoice(d.pop("invoice", UNSET))
+
         def _parse_processed_at(data: object) -> datetime.datetime | None | Unset:
             if data is None:
                 return data
@@ -271,10 +310,12 @@ class CustomCostUploadResponse:
             total_rows=total_rows,
             success_rows=success_rows,
             error_rows=error_rows,
+            format_=format_,
             uploaded_at=uploaded_at,
             covered_from=covered_from,
             covered_to=covered_to,
             billed_totals=billed_totals,
+            invoice=invoice,
             processed_at=processed_at,
             errors=errors,
         )
