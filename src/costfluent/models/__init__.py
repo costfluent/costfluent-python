@@ -128,11 +128,14 @@ from .currency_amount import CurrencyAmount
 from .currency_conversion import CurrencyConversion
 from .currency_presentation import CurrencyPresentation
 from .custom_cost_upload_error import CustomCostUploadError
+from .custom_cost_upload_invoice import CustomCostUploadInvoice
+from .custom_cost_upload_line_placements import CustomCostUploadLinePlacements
 from .custom_cost_upload_request import CustomCostUploadRequest
 from .custom_cost_upload_response import CustomCostUploadResponse
 from .custom_cost_upload_response_billed_totals_type_0 import (
     CustomCostUploadResponseBilledTotalsType0,
 )
+from .custom_cost_upload_vat_breakdown import CustomCostUploadVatBreakdown
 from .dashboard_created_response import DashboardCreatedResponse
 from .dashboard_response import DashboardResponse
 from .dashboard_widget_created_response import DashboardWidgetCreatedResponse
@@ -577,9 +580,12 @@ __all__ = (
     "CurrencyConversion",
     "CurrencyPresentation",
     "CustomCostUploadError",
+    "CustomCostUploadInvoice",
+    "CustomCostUploadLinePlacements",
     "CustomCostUploadRequest",
     "CustomCostUploadResponse",
     "CustomCostUploadResponseBilledTotalsType0",
+    "CustomCostUploadVatBreakdown",
     "DashboardCreatedResponse",
     "DashboardResponse",
     "DashboardWidgetCreatedResponse",

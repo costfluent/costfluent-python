@@ -21,6 +21,7 @@ class ProviderResponse:
         display_name (str):
         status (str):
         sync_frequency_minutes (int):
+        enable_automatic_syncing (bool):
         created_at (datetime.datetime):
         description (None | str | Unset):
         parent_provider_id (None | str | Unset):
@@ -38,6 +39,7 @@ class ProviderResponse:
     display_name: str
     status: str
     sync_frequency_minutes: int
+    enable_automatic_syncing: bool
     created_at: datetime.datetime
     description: None | str | Unset = UNSET
     parent_provider_id: None | str | Unset = UNSET
@@ -60,6 +62,8 @@ class ProviderResponse:
         status = self.status
 
         sync_frequency_minutes = self.sync_frequency_minutes
+
+        enable_automatic_syncing = self.enable_automatic_syncing
 
         created_at = self.created_at.isoformat()
 
@@ -127,6 +131,7 @@ class ProviderResponse:
                 "displayName": display_name,
                 "status": status,
                 "syncFrequencyMinutes": sync_frequency_minutes,
+                "enableAutomaticSyncing": enable_automatic_syncing,
                 "createdAt": created_at,
             }
         )
@@ -163,6 +168,8 @@ class ProviderResponse:
         status = d.pop("status")
 
         sync_frequency_minutes = d.pop("syncFrequencyMinutes")
+
+        enable_automatic_syncing = d.pop("enableAutomaticSyncing")
 
         created_at = datetime.datetime.fromisoformat(d.pop("createdAt"))
 
@@ -269,6 +276,7 @@ class ProviderResponse:
             display_name=display_name,
             status=status,
             sync_frequency_minutes=sync_frequency_minutes,
+            enable_automatic_syncing=enable_automatic_syncing,
             created_at=created_at,
             description=description,
             parent_provider_id=parent_provider_id,

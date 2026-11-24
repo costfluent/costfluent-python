@@ -31,6 +31,7 @@ class ConnectProviderRequest:
         external_id (None | str | Unset):
         settings (ConnectProviderRequestSettingsType0 | None | Unset):
         sync_frequency_minutes (int | Unset):
+        enable_automatic_syncing (bool | Unset):
     """
 
     key: str
@@ -41,6 +42,7 @@ class ConnectProviderRequest:
     external_id: None | str | Unset = UNSET
     settings: ConnectProviderRequestSettingsType0 | None | Unset = UNSET
     sync_frequency_minutes: int | Unset = UNSET
+    enable_automatic_syncing: bool | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.connect_provider_request_settings_type_0 import (
@@ -85,6 +87,8 @@ class ConnectProviderRequest:
 
         sync_frequency_minutes = self.sync_frequency_minutes
 
+        enable_automatic_syncing = self.enable_automatic_syncing
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update(
@@ -105,6 +109,8 @@ class ConnectProviderRequest:
             field_dict["settings"] = settings
         if sync_frequency_minutes is not UNSET:
             field_dict["syncFrequencyMinutes"] = sync_frequency_minutes
+        if enable_automatic_syncing is not UNSET:
+            field_dict["enableAutomaticSyncing"] = enable_automatic_syncing
 
         return field_dict
 
@@ -179,6 +185,8 @@ class ConnectProviderRequest:
 
         sync_frequency_minutes = d.pop("syncFrequencyMinutes", UNSET)
 
+        enable_automatic_syncing = d.pop("enableAutomaticSyncing", UNSET)
+
         connect_provider_request = cls(
             key=key,
             credentials=credentials,
@@ -188,6 +196,7 @@ class ConnectProviderRequest:
             external_id=external_id,
             settings=settings,
             sync_frequency_minutes=sync_frequency_minutes,
+            enable_automatic_syncing=enable_automatic_syncing,
         )
 
         return connect_provider_request

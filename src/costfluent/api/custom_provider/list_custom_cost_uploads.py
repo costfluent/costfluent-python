@@ -111,8 +111,8 @@ def sync_detailed(
     """List uploads
 
      Returns a custom provider's uploads, newest first, each with the days it covers and what it billed.
-    billedTotals is null unless the token has manageProviders, or viewCosts in workspaces that together
-    read the whole connection.
+    billedTotals and invoice are null unless the token has manageProviders, or viewCosts in workspaces
+    that together read the whole connection.
 
     Needs an organization token with `viewProviders`.
 
@@ -152,8 +152,8 @@ def sync(
     """List uploads
 
      Returns a custom provider's uploads, newest first, each with the days it covers and what it billed.
-    billedTotals is null unless the token has manageProviders, or viewCosts in workspaces that together
-    read the whole connection.
+    billedTotals and invoice are null unless the token has manageProviders, or viewCosts in workspaces
+    that together read the whole connection.
 
     Needs an organization token with `viewProviders`.
 
@@ -188,8 +188,8 @@ async def asyncio_detailed(
     """List uploads
 
      Returns a custom provider's uploads, newest first, each with the days it covers and what it billed.
-    billedTotals is null unless the token has manageProviders, or viewCosts in workspaces that together
-    read the whole connection.
+    billedTotals and invoice are null unless the token has manageProviders, or viewCosts in workspaces
+    that together read the whole connection.
 
     Needs an organization token with `viewProviders`.
 
@@ -227,8 +227,8 @@ async def asyncio(
     """List uploads
 
      Returns a custom provider's uploads, newest first, each with the days it covers and what it billed.
-    billedTotals is null unless the token has manageProviders, or viewCosts in workspaces that together
-    read the whole connection.
+    billedTotals and invoice are null unless the token has manageProviders, or viewCosts in workspaces
+    that together read the whole connection.
 
     Needs an organization token with `viewProviders`.
 

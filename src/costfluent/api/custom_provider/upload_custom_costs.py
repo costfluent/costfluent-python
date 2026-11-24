@@ -37,6 +37,11 @@ def _get_kwargs(
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
 ) -> ApiError | CustomCostUploadResponse | None:
+    if response.status_code == 200:
+        response_200 = CustomCostUploadResponse.from_dict(response.json())
+
+        return response_200
+
     if response.status_code == 202:
         response_202 = CustomCostUploadResponse.from_dict(response.json())
 
@@ -66,6 +71,11 @@ def _parse_response(
         response_408 = ApiError.from_dict(response.json())
 
         return response_408
+
+    if response.status_code == 409:
+        response_409 = ApiError.from_dict(response.json())
+
+        return response_409
 
     if response.status_code == 413:
         response_413 = ApiError.from_dict(response.json())
@@ -127,7 +137,14 @@ def sync_detailed(
     paused, fails and commits nothing. An organization has at most 5 uploads waiting or being processed
     at once, one deleted before it finished counting for 5 minutes after the delete; a further upload,
     or one sent once its custom connections have committed the day's cost records or bytes, is refused
-    with 429 and nothing is stored.
+    with 429 and nothing is stored. A provider created with the setting upload_format einvoice takes one
+    e-invoice per upload instead: an XRechnung, ZUGFeRD or Factur-X invoice of profile EN 16931 or
+    above, as an .xml file or a PDF that embeds it, up to 20 MiB. It is read when it is received, and
+    refused with its reason if it cannot be. Its lines become the cost; its VAT is shown in the upload's
+    invoice and never counted. A provider collects one seller's invoices: the seller of its first. The
+    identical invoice sent again answers 200 with its first upload, another document under the same
+    number 409, and a corrected invoice (384) replaces the invoice it names, which must be an upload of
+    the provider.
 
     Needs an organization token with `manageProviders`.
 
@@ -173,7 +190,14 @@ def sync(
     paused, fails and commits nothing. An organization has at most 5 uploads waiting or being processed
     at once, one deleted before it finished counting for 5 minutes after the delete; a further upload,
     or one sent once its custom connections have committed the day's cost records or bytes, is refused
-    with 429 and nothing is stored.
+    with 429 and nothing is stored. A provider created with the setting upload_format einvoice takes one
+    e-invoice per upload instead: an XRechnung, ZUGFeRD or Factur-X invoice of profile EN 16931 or
+    above, as an .xml file or a PDF that embeds it, up to 20 MiB. It is read when it is received, and
+    refused with its reason if it cannot be. Its lines become the cost; its VAT is shown in the upload's
+    invoice and never counted. A provider collects one seller's invoices: the seller of its first. The
+    identical invoice sent again answers 200 with its first upload, another document under the same
+    number 409, and a corrected invoice (384) replaces the invoice it names, which must be an upload of
+    the provider.
 
     Needs an organization token with `manageProviders`.
 
@@ -214,7 +238,14 @@ async def asyncio_detailed(
     paused, fails and commits nothing. An organization has at most 5 uploads waiting or being processed
     at once, one deleted before it finished counting for 5 minutes after the delete; a further upload,
     or one sent once its custom connections have committed the day's cost records or bytes, is refused
-    with 429 and nothing is stored.
+    with 429 and nothing is stored. A provider created with the setting upload_format einvoice takes one
+    e-invoice per upload instead: an XRechnung, ZUGFeRD or Factur-X invoice of profile EN 16931 or
+    above, as an .xml file or a PDF that embeds it, up to 20 MiB. It is read when it is received, and
+    refused with its reason if it cannot be. Its lines become the cost; its VAT is shown in the upload's
+    invoice and never counted. A provider collects one seller's invoices: the seller of its first. The
+    identical invoice sent again answers 200 with its first upload, another document under the same
+    number 409, and a corrected invoice (384) replaces the invoice it names, which must be an upload of
+    the provider.
 
     Needs an organization token with `manageProviders`.
 
@@ -258,7 +289,14 @@ async def asyncio(
     paused, fails and commits nothing. An organization has at most 5 uploads waiting or being processed
     at once, one deleted before it finished counting for 5 minutes after the delete; a further upload,
     or one sent once its custom connections have committed the day's cost records or bytes, is refused
-    with 429 and nothing is stored.
+    with 429 and nothing is stored. A provider created with the setting upload_format einvoice takes one
+    e-invoice per upload instead: an XRechnung, ZUGFeRD or Factur-X invoice of profile EN 16931 or
+    above, as an .xml file or a PDF that embeds it, up to 20 MiB. It is read when it is received, and
+    refused with its reason if it cannot be. Its lines become the cost; its VAT is shown in the upload's
+    invoice and never counted. A provider collects one seller's invoices: the seller of its first. The
+    identical invoice sent again answers 200 with its first upload, another document under the same
+    number 409, and a corrected invoice (384) replaces the invoice it names, which must be an upload of
+    the provider.
 
     Needs an organization token with `manageProviders`.
 

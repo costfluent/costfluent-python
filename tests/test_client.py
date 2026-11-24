@@ -282,6 +282,23 @@ class ErrorTests(unittest.TestCase):
         self.assertEqual((raised.exception.status, raised.exception.code), (401, ""))
         self.assertIsNone(raised.exception.problem)
 
+    def test_retryable_follows_the_problem_and_is_false_without_one(self) -> None:
+        cases = {
+            "a 503 marked retryable": (problem(503, "service_unavailable", retryable=True), True),
+            "a 429 marked retryable": (problem(429, "rate_limit_exceeded", retryable=True), True),
+            "a 500 the API marks not retryable": (problem(500, "internal_error", retryable=False), False),
+            "no problem details": (json_response(503, {"message": "no"}), False),
+        }
+        for name, (reply, want) in cases.items():
+            with self.subTest(name):
+                api = FakeApi(reply)
+
+                with self.assertRaises(CostfluentError) as raised:
+                    get_folder.sync(client=api.client(max_retries=0), folder_id="fld_1", workspace_id="ws_1")
+
+                self.assertIs(raised.exception.retryable, want)
+                self.assertEqual(len(api.requests), 1)
+
     def test_an_unreadable_problem_body_is_reported_as_none(self) -> None:
         # A proxy's page or a truncated answer under the problem media type.
         bodies = {

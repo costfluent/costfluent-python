@@ -31,6 +31,7 @@ class UpdateProviderRequest:
         settings (None | Unset | UpdateProviderRequestSettingsType0):
         clear_settings (bool | Unset):
         sync_frequency_minutes (int | None | Unset):
+        enable_automatic_syncing (bool | None | Unset):
     """
 
     display_name: None | str | Unset = UNSET
@@ -41,6 +42,7 @@ class UpdateProviderRequest:
     settings: None | Unset | UpdateProviderRequestSettingsType0 = UNSET
     clear_settings: bool | Unset = UNSET
     sync_frequency_minutes: int | None | Unset = UNSET
+    enable_automatic_syncing: bool | None | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.update_provider_request_credentials_type_0 import (
@@ -94,6 +96,12 @@ class UpdateProviderRequest:
         else:
             sync_frequency_minutes = self.sync_frequency_minutes
 
+        enable_automatic_syncing: bool | None | Unset
+        if isinstance(self.enable_automatic_syncing, Unset):
+            enable_automatic_syncing = UNSET
+        else:
+            enable_automatic_syncing = self.enable_automatic_syncing
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update({})
@@ -113,6 +121,8 @@ class UpdateProviderRequest:
             field_dict["clearSettings"] = clear_settings
         if sync_frequency_minutes is not UNSET:
             field_dict["syncFrequencyMinutes"] = sync_frequency_minutes
+        if enable_automatic_syncing is not UNSET:
+            field_dict["enableAutomaticSyncing"] = enable_automatic_syncing
 
         return field_dict
 
@@ -209,6 +219,17 @@ class UpdateProviderRequest:
             d.pop("syncFrequencyMinutes", UNSET)
         )
 
+        def _parse_enable_automatic_syncing(data: object) -> bool | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(bool | None | Unset, data)
+
+        enable_automatic_syncing = _parse_enable_automatic_syncing(
+            d.pop("enableAutomaticSyncing", UNSET)
+        )
+
         update_provider_request = cls(
             display_name=display_name,
             description=description,
@@ -218,6 +239,7 @@ class UpdateProviderRequest:
             settings=settings,
             clear_settings=clear_settings,
             sync_frequency_minutes=sync_frequency_minutes,
+            enable_automatic_syncing=enable_automatic_syncing,
         )
 
         return update_provider_request

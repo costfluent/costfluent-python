@@ -91,8 +91,8 @@ def sync_detailed(
     """Get upload
 
      Returns one upload with its status and, when it failed, the first errors of its report. billedTotals
-    is null unless the token has manageProviders, or viewCosts in workspaces that together read the
-    whole connection.
+    and invoice are null unless the token has manageProviders, or viewCosts in workspaces that together
+    read the whole connection.
 
     Needs an organization token with `viewProviders`.
 
@@ -129,8 +129,8 @@ def sync(
     """Get upload
 
      Returns one upload with its status and, when it failed, the first errors of its report. billedTotals
-    is null unless the token has manageProviders, or viewCosts in workspaces that together read the
-    whole connection.
+    and invoice are null unless the token has manageProviders, or viewCosts in workspaces that together
+    read the whole connection.
 
     Needs an organization token with `viewProviders`.
 
@@ -162,8 +162,8 @@ async def asyncio_detailed(
     """Get upload
 
      Returns one upload with its status and, when it failed, the first errors of its report. billedTotals
-    is null unless the token has manageProviders, or viewCosts in workspaces that together read the
-    whole connection.
+    and invoice are null unless the token has manageProviders, or viewCosts in workspaces that together
+    read the whole connection.
 
     Needs an organization token with `viewProviders`.
 
@@ -198,8 +198,8 @@ async def asyncio(
     """Get upload
 
      Returns one upload with its status and, when it failed, the first errors of its report. billedTotals
-    is null unless the token has manageProviders, or viewCosts in workspaces that together read the
-    whole connection.
+    and invoice are null unless the token has manageProviders, or viewCosts in workspaces that together
+    read the whole connection.
 
     Needs an organization token with `viewProviders`.
 
