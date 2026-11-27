@@ -144,7 +144,15 @@ def sync_detailed(
     invoice and never counted. A provider collects one seller's invoices: the seller of its first. The
     identical invoice sent again answers 200 with its first upload, another document under the same
     number 409, and a corrected invoice (384) replaces the invoice it names, which must be an upload of
-    the provider.
+    the provider. One corrected invoice stands for an invoice: a second correction of it, or a document
+    a correction replaced sent again, is refused with 422 naming the correction that stands, and a later
+    change is a corrected invoice naming that one. A Hetzner import, a provider created with
+    upload_format hetzner_statement and its hetzner_customer_number, takes one Hetzner usage statement
+    per upload instead: the .csv file its detailed usage page downloads, up to 90 MB. It is read with
+    the import's customer number when it is received, and refused naming the format if it is not a
+    statement. Its lines are added as cost at their net amounts and change no other day. The same
+    statement sent again answers 200 with its first upload, and one sharing lines with another live
+    statement upload of the import 409.
 
     Needs an organization token with `manageProviders`.
 
@@ -197,7 +205,15 @@ def sync(
     invoice and never counted. A provider collects one seller's invoices: the seller of its first. The
     identical invoice sent again answers 200 with its first upload, another document under the same
     number 409, and a corrected invoice (384) replaces the invoice it names, which must be an upload of
-    the provider.
+    the provider. One corrected invoice stands for an invoice: a second correction of it, or a document
+    a correction replaced sent again, is refused with 422 naming the correction that stands, and a later
+    change is a corrected invoice naming that one. A Hetzner import, a provider created with
+    upload_format hetzner_statement and its hetzner_customer_number, takes one Hetzner usage statement
+    per upload instead: the .csv file its detailed usage page downloads, up to 90 MB. It is read with
+    the import's customer number when it is received, and refused naming the format if it is not a
+    statement. Its lines are added as cost at their net amounts and change no other day. The same
+    statement sent again answers 200 with its first upload, and one sharing lines with another live
+    statement upload of the import 409.
 
     Needs an organization token with `manageProviders`.
 
@@ -245,7 +261,15 @@ async def asyncio_detailed(
     invoice and never counted. A provider collects one seller's invoices: the seller of its first. The
     identical invoice sent again answers 200 with its first upload, another document under the same
     number 409, and a corrected invoice (384) replaces the invoice it names, which must be an upload of
-    the provider.
+    the provider. One corrected invoice stands for an invoice: a second correction of it, or a document
+    a correction replaced sent again, is refused with 422 naming the correction that stands, and a later
+    change is a corrected invoice naming that one. A Hetzner import, a provider created with
+    upload_format hetzner_statement and its hetzner_customer_number, takes one Hetzner usage statement
+    per upload instead: the .csv file its detailed usage page downloads, up to 90 MB. It is read with
+    the import's customer number when it is received, and refused naming the format if it is not a
+    statement. Its lines are added as cost at their net amounts and change no other day. The same
+    statement sent again answers 200 with its first upload, and one sharing lines with another live
+    statement upload of the import 409.
 
     Needs an organization token with `manageProviders`.
 
@@ -296,7 +320,15 @@ async def asyncio(
     invoice and never counted. A provider collects one seller's invoices: the seller of its first. The
     identical invoice sent again answers 200 with its first upload, another document under the same
     number 409, and a corrected invoice (384) replaces the invoice it names, which must be an upload of
-    the provider.
+    the provider. One corrected invoice stands for an invoice: a second correction of it, or a document
+    a correction replaced sent again, is refused with 422 naming the correction that stands, and a later
+    change is a corrected invoice naming that one. A Hetzner import, a provider created with
+    upload_format hetzner_statement and its hetzner_customer_number, takes one Hetzner usage statement
+    per upload instead: the .csv file its detailed usage page downloads, up to 90 MB. It is read with
+    the import's customer number when it is received, and refused naming the format if it is not a
+    statement. Its lines are added as cost at their net amounts and change no other day. The same
+    statement sent again answers 200 with its first upload, and one sharing lines with another live
+    statement upload of the import 409.
 
     Needs an organization token with `manageProviders`.
 
